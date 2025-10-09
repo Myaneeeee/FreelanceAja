@@ -1,1 +1,25 @@
 @import "bootstrap/scss/bootstrap";
+
+:root {
+    --bs-primary: #0ea5e9; /* cyan-like primary */
+    --bs-secondary: #64748b; /* slate */
+    --bs-success: #16a34a;
+    --bs-danger: #dc2626;
+}
+
+.card {
+    border-radius: 0.6rem;
+}
+.btn {
+    border-radius: 0.5rem;
+}
+
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
+}
+
+.text-pre-wrap {
+    white-space: pre-wrap;
+}
