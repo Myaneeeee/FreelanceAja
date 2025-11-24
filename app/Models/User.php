@@ -44,4 +44,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relationships
+    public function clientProfile()
+    {
+        return $this->hasOne(ClientProfile::class);
+    }
+
+    public function freelancerProfile()
+    {
+        return $this->hasOne(FreelancerProfile::class);
+    }
 }

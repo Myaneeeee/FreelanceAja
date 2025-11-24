@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Job;
+use App\Models\Skill;
 use Illuminate\Http\Request;
 use App\Support\DummyData;
 
@@ -9,15 +11,17 @@ class LandingController extends Controller
 {
     public function index()
     {
-        // TODO: Pull stats from DB
+        // Real DB Queries
         $stats = [
-            'jobs_open' => count(array_filter(DummyData::jobs(), fn ($j) => $j['status'] === 'open')),
-            'freelancers' => 1, // TODO: DB count
-            'clients' => 1, // TODO: DB count
+            'jobs_open'   => Job::where('status', 'open')->count(),
+            // Since we removed 'role', we count Profiles to know how many Freelancers/Clients exist
+            'freelancers' => \App\Models\FreelancerProfile::count(),
+            'clients'     => \App\Models\ClientProfile::count(),
         ];
 
-        return view('landing', [
-            'stats' => $stats,
-        ]);
+        // Get 5 random skills for the tags on the landing page
+        $skills = Skill::inRandomOrder()->limit(5)->get();
+
+        return view('landing', compact('stats', 'skills'));
     }
 }

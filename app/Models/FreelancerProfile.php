@@ -14,5 +14,24 @@ class FreelancerProfile extends Model
         'rate_per_hour'
     ];
 
-    // TODO: relationships (user, skills, proposals, contracts)
+    // relationships (user, skills, proposals, contracts)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class, 'freelancer_profile_skill');
+    }
+
+    public function proposals()
+    {
+        return $this->hasMany(Proposal::class);
+    }
+
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
 }

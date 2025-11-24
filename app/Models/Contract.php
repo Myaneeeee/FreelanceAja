@@ -17,5 +17,24 @@ class Contract extends Model
         'status',
     ];
 
-    // TODO: relationships (job, proposal, freelancerProfile, clientProfile)
+    // relationships (job, proposal, freelancerProfile, clientProfile)
+    public function job()
+    {
+        return $this->belongsTo(Job::class);
+    }
+
+    public function proposal()
+    {
+        return $this->belongsTo(Proposal::class);
+    }
+
+    public function freelancerProfile()
+    {
+        return $this->belongsTo(FreelancerProfile::class);
+    }
+
+    public function clientProfile()
+    {
+        return $this->belongsTo(ClientProfile::class);
+    }
 }

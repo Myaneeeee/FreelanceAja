@@ -16,5 +16,24 @@ class Job extends Model
         'deadline',
     ];
 
-    // TODO: relationships (clientProfile, skills, proposals, contract)
+    // relationships (clientProfile, skills, proposals, contract)
+    public function clientProfile()
+    {
+        return $this->belongsTo(ClientProfile::class);
+    }
+
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class, 'job_skill');
+    }
+
+    public function proposals()
+    {
+        return $this->hasMany(Proposal::class);
+    }
+
+    public function contract()
+    {
+        return $this->hasOne(Contract::class);
+    }
 }

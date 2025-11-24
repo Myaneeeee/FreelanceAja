@@ -14,5 +14,14 @@ class Proposal extends Model
         'status',
     ];
 
-    // TODO: relationships (job, freelancerProfile)
+    // relationships (job, freelancerProfile)
+    public function job()
+    {
+        return $this->belongsTo(Job::class);
+    }
+
+    public function freelancerProfile()
+    {
+        return $this->belongsTo(FreelancerProfile::class);
+    }
 }

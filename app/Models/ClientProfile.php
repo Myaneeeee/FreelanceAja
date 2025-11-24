@@ -13,5 +13,19 @@ class ClientProfile extends Model
         'website_url'
     ];
 
-    // TODO: relationships (user, jobs, contracts)
+    // relationships (user, jobs, contracts)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function jobs()
+    {
+        return $this->hasMany(Job::class);
+    }
+
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
 }

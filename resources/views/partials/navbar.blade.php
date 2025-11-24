@@ -31,9 +31,17 @@
           </ul>
         </li>
       </ul>
-      <div class="d-flex">
-         {{-- Placeholder auth buttons --}}
-        <a class="btn btn-outline-light btn-sm" href="#">Sign In</a>
+        <div class="d-flex align-items-center gap-2">
+        @auth
+            <span class="text-light me-2">Hi, {{ Auth::user()->name }}</span>
+            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+            </form>
+        @else
+            <a class="btn btn-outline-light btn-sm" href="{{ route('login') }}">Sign In</a>
+            <a class="btn btn-light btn-sm" href="{{ route('register') }}">Sign Up</a>
+        @endauth
       </div>
     </div>
   </div>
