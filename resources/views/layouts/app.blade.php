@@ -8,7 +8,6 @@
   <title>FreelanceAja - @yield('title')</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-  <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
 </head>
 
 <body class="d-flex flex-column min-vh-100">  <!-- ✅ Full-height flex container -->

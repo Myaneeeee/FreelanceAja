@@ -1,45 +1,93 @@
 @extends('layouts.app')
 
-{{-- TODO : GANTI PAGE TITLE --}}
-@section('title', 'Create Contracts')
+@section('title', 'Finalize Contract')
 
 @section('content')
-<h2 class="mb-3">Create Contract</h2>
-<form method="post" action="{{ route('client.contracts.store') }}">
-  @csrf
-  <div class="row g-3">
-    <div class="col-md-6">
-      <label class="form-label">Job</label>
-      <select class="form-select" name="job_id">
-        @foreach ($jobs as $j)
-          <option value="{{ $j['id'] }}">#{{ $j['id'] }} — {{ $j['title'] }}</option>
-        @endforeach
-      </select>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-success text-white py-3">
+                <h4 class="fw-bold mb-0">Create Contract</h4>
+                <p class="mb-0 opacity-75">Review details and start the project.</p>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ route('client.contracts.store') }}" method="POST">
+                    @csrf
+                    
+                    {{-- Proposal Selection (Auto-selected if ID passed) --}}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Select Accepted Proposal</label>
+                        <select name="proposal_id" class="form-select bg-light" id="proposalSelect" onchange="updateFormDetails(this)">
+                            @foreach($acceptedProposals as $p)
+                                <option value="{{ $p->id }}" 
+                                    data-price="{{ $p->bid_amount }}" 
+                                    data-freelancer="{{ $p->freelancerProfile->user->name }}"
+                                    data-job="{{ $p->job->title }}"
+                                    {{ $selectedProposalId == $p->id ? 'selected' : '' }}>
+                                    {{ $p->job->title }} - {{ $p->freelancerProfile->user->name }} (${{ $p->bid_amount }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Read-only Summary --}}
+                    <div class="alert alert-light border mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Freelancer</small>
+                                <strong id="summaryFreelancer">-</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Job Title</small>
+                                <strong id="summaryJob">-</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Agreed Final Price ($)</label>
+                            <input type="number" name="final_price" id="finalPrice" class="form-control form-control-lg fw-bold" step="0.01" required>
+                            <div class="form-text">You can adjust the final amount if discussed with the freelancer.</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Start Date</label>
+                            <input type="date" name="start_date" class="form-control" value="{{ date('Y-m-d') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">End Date (Optional)</label>
+                            <input type="date" name="end_date" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">Start Contract</button>
+                        <a href="{{ route('client.home') }}" class="btn btn-link text-muted">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="col-md-6">
-      <label class="form-label">Proposal</label>
-      <select class="form-select" name="proposal_id">
-        @foreach ($proposals as $p)
-          <option value="{{ $p['id'] }}">#{{ $p['id'] }} — ${{ number_format($p['bid_amount'],2) }}</option>
-        @endforeach
-      </select>
-    </div>
-    <div class="col-md-4">
-      <label class="form-label">Final Price</label>
-      <input type="number" step="0.01" name="final_price" class="form-control" placeholder="e.g. 2000">
-    </div>
-    <div class="col-md-4">
-      <label class="form-label">Start Date</label>
-      <input type="date" name="start_date" class="form-control">
-    </div>
-    <div class="col-md-4">
-      <label class="form-label">End Date (optional)</label>
-      <input type="date" name="end_date" class="form-control">
-    </div>
-  </div>
-  <div class="mt-3">
-    <button class="btn btn-primary" type="submit">Create Contract</button>
-    <span class="form-text ms-2">// TODO: Save to DB</span>
-  </div>
-</form>
+</div>
+
+<script>
+    // Simple script to update the UI based on selected dropdown
+    function updateFormDetails(select) {
+        const option = select.options[select.selectedIndex];
+        document.getElementById('finalPrice').value = option.dataset.price;
+        document.getElementById('summaryFreelancer').innerText = option.dataset.freelancer;
+        document.getElementById('summaryJob').innerText = option.dataset.job;
+    }
+
+    // Run on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const select = document.getElementById('proposalSelect');
+        if(select.options.length > 0) {
+            updateFormDetails(select);
+        }
+    });
+</script>
 @endsection

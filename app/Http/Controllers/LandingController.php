@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClientProfile;
+use App\Models\FreelancerProfile;
 use App\Models\Job;
 use App\Models\Skill;
+use Auth;
 use Illuminate\Http\Request;
 use App\Support\DummyData;
 
@@ -11,17 +14,26 @@ class LandingController extends Controller
 {
     public function index()
     {
-        // Real DB Queries
+        // 1. Check if user is logged in
+        if (Auth::check()) {
+            $role = session('active_role', 'freelancer');
+            return redirect()->route($role . '.home');
+        }
+
         $stats = [
             'jobs_open'   => Job::where('status', 'open')->count(),
-            // Since we removed 'role', we count Profiles to know how many Freelancers/Clients exist
-            'freelancers' => \App\Models\FreelancerProfile::count(),
-            'clients'     => \App\Models\ClientProfile::count(),
+            'freelancers' => FreelancerProfile::count(),
+            'clients'     => ClientProfile::count(),
         ];
 
-        // Get 5 random skills for the tags on the landing page
-        $skills = Skill::inRandomOrder()->limit(5)->get();
+        $skills = Skill::inRandomOrder()->limit(10)->get();
 
-        return view('landing', compact('stats', 'skills'));
+        $recentJobs = Job::with('clientProfile')
+                         ->where('status', 'open')
+                         ->latest()
+                         ->take(3)
+                         ->get();
+
+        return view('landing', compact('stats', 'skills', 'recentJobs'));
     }
 }

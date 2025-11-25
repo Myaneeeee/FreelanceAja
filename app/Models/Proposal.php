@@ -24,4 +24,8 @@ class Proposal extends Model
     {
         return $this->belongsTo(FreelancerProfile::class);
     }
+    public function contract()
+    {
+        return $this->hasOne(Contract::class);
+    }
 }

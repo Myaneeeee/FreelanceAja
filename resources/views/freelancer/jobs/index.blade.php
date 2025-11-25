@@ -1,73 +1,98 @@
 @extends('layouts.app')
 
-{{-- TODO : GANTI PAGE TITLE --}}
-@section('title', 'Jobs')
+@section('title', 'Browse Jobs')
 
 @section('content')
-<h2 class="mb-3">Browse Jobs</h2>
+<div class="row">
+    <!-- Filters Sidebar -->
+    <div class="col-lg-3 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">Filter Jobs</h5>
+                <form action="{{ route('freelancer.jobs.index') }}" method="GET">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Search</label>
+                        <input type="text" name="q" class="form-control" value="{{ request('q') }}" placeholder="Keywords...">
+                    </div>
 
-<form class="row gy-2 gx-2 align-items-end mb-3" method="get" action="{{ route('freelancer.jobs.index') }}">
-  <div class="col-12 col-md-4">
-    <label class="form-label">Search</label>
-    <input type="text" class="form-control" name="q" value="{{ $q }}" placeholder="Title or description">
-  </div>
-  <div class="col-6 col-md-2">
-    <label class="form-label">Type</label>
-    <select class="form-select" name="type">
-      <option value="">Any</option>
-      <option value="fixed_price" @selected($type==='fixed_price')>Fixed price</option>
-      <option value="hourly" @selected($type==='hourly')>Hourly</option>
-    </select>
-  </div>
-  <div class="col-6 col-md-3">
-    <label class="form-label">Skill</label>
-    <select class="form-select" name="skill_id">
-      <option value="">Any</option>
-      @foreach ($skills as $s)
-        <option value="{{ $s['id'] }}" @selected($skillId===$s['id'])>{{ $s['name'] }}</option>
-      @endforeach
-    </select>
-  </div>
-  <div class="col-6 col-md-1">
-    <label class="form-label">Min</label>
-    <input type="number" step="0.01" class="form-control" name="budget_min" value="{{ $budgetMin }}">
-  </div>
-  <div class="col-6 col-md-1">
-    <label class="form-label">Max</label>
-    <input type="number" step="0.01" class="form-control" name="budget_max" value="{{ $budgetMax }}">
-  </div>
-  <div class="col-12 col-md-1 d-grid">
-    <button type="submit" class="btn btn-primary">Filter</button>
-  </div>
-</form>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Job Type</label>
+                        <select name="type" class="form-select">
+                            <option value="">All Types</option>
+                            <option value="fixed_price" {{ request('type') == 'fixed_price' ? 'selected' : '' }}>Fixed Price</option>
+                            <option value="hourly" {{ request('type') == 'hourly' ? 'selected' : '' }}>Hourly</option>
+                        </select>
+                    </div>
 
-<div class="row g-3">
-  @forelse ($jobs as $job)
-    <div class="col-md-6 col-lg-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">{{ $job['title'] }}</h5>
-          <p class="card-text text-muted flex-grow-1">{{ $job['description'] }}</p>
-          <div class="mb-2">
-            <span class="badge text-bg-light border me-2">{{ ucfirst(str_replace('_', ' ', $job['type'])) }}</span>
-            <span class="badge text-bg-success">${{ number_format($job['budget'], 2) }}</span>
-          </div>
-          <div class="d-grid gap-2 d-md-block">
-            <a href="{{ route('freelancer.jobs.show', $job['id']) }}" class="btn btn-outline-primary btn-sm">View</a>
-            <form class="d-inline" method="post" action="{{ route('freelancer.jobs.proposals.submit', $job['id']) }}">
-              @csrf
-              <input type="hidden" name="cover_letter" value="Quick apply - // TODO: replace">
-              <input type="hidden" name="bid_amount" value="{{ $job['type']==='hourly' ? $job['budget'] : max(500, (int)$job['budget'] - 100) }}">
-              <button class="btn btn-primary btn-sm" type="submit">Quick Apply</button>
-            </form>
-          </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Category (Skill)</label>
+                        <select name="skill_id" class="form-select">
+                            <option value="">All Skills</option>
+                            @foreach($skills as $skill)
+                                <option value="{{ $skill->id }}" {{ request('skill_id') == $skill->id ? 'selected' : '' }}>
+                                    {{ $skill->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Min Budget ($)</label>
+                        <input type="number" name="budget_min" class="form-control" value="{{ request('budget_min') }}">
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        <a href="{{ route('freelancer.jobs.index') }}" class="btn btn-link text-decoration-none btn-sm mt-1">Reset</a>
+                    </div>
+                </form>
+            </div>
         </div>
-      </div>
     </div>
-  @empty
-    <div class="col-12">
-      <div class="alert alert-info">No jobs match your filters.</div>
+
+    <!-- Job List -->
+    <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold">Available Jobs</h4>
+            <span class="text-muted small">{{ $jobs->total() }} results found</span>
+        </div>
+
+        @forelse($jobs as $job)
+        <div class="card shadow-sm border-0 mb-3 hover-shadow transition">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="fw-bold text-primary mb-1">
+                            <a href="{{ route('freelancer.jobs.show', $job->id) }}" class="text-decoration-none">{{ $job->title }}</a>
+                        </h5>
+                        <p class="text-muted small mb-2">
+                            Posted {{ $job->created_at->diffForHumans() }} by {{ $job->clientProfile->company_name ?? $job->clientProfile->user->name }}
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <h5 class="fw-bold mb-0">${{ number_format($job->budget) }}</h5>
+                        <small class="text-muted">{{ $job->type == 'hourly' ? '/ hr' : 'Fixed' }}</small>
+                    </div>
+                </div>
+
+                <p class="mb-3 text-secondary">{{ Str::limit($job->description, 150) }}</p>
+
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach($job->skills as $skill)
+                        <span class="badge bg-light text-secondary border rounded-pill">{{ $skill->name }}</span>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @empty
+        <div class="alert alert-info text-center">
+            No jobs found matching your criteria. Try adjusting your filters.
+        </div>
+        @endforelse
+
+        <div class="mt-4">
+            {{ $jobs->links() }}
+        </div>
     </div>
-  @endforelse
 </div>
 @endsection

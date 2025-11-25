@@ -6,7 +6,6 @@ use App\Models\Job;
 use App\Models\Proposal;
 use App\Models\Skill;
 use Illuminate\Http\Request;
-use App\Support\DummyData;
 use Illuminate\Support\Facades\Auth;
 
 class FreelancerController extends Controller
@@ -14,33 +13,40 @@ class FreelancerController extends Controller
     public function home()
     {
         $user = Auth::user();
-        
         $profile = $user->freelancerProfile;
 
-        // Get Active and Past contracts
-        $activeContracts = $profile->contracts()->where('status', 'active')->get()->toArray();
-        $pastContracts   = $profile->contracts()->whereIn('status', ['completed', 'cancelled', 'disputed'])->get()->toArray();
+        // Get Active Contracts (limit to 3 for dashboard)
+        $activeContracts = $profile->contracts()
+            ->with('job.clientProfile.user') // Eager load relationships
+            ->where('status', 'active')
+            ->latest()
+            ->take(3)
+            ->get();
 
-        // Suggest jobs based on skills (Simple recommendation system)
+        // Get recent job postings that match skills
         $mySkillIds = $profile->skills->pluck('id');
         
-        $jobs = Job::where('status', 'open')
+        $recommendedJobs = Job::with(['skills', 'clientProfile'])
+            ->where('status', 'open')
             ->whereHas('skills', function($query) use ($mySkillIds) {
-                $query->whereIn('id', $mySkillIds);
+                $query->whereIn('skills.id', $mySkillIds); // Specify table name to avoid ambiguity
             })
+            ->latest()
             ->limit(5)
-            ->get()
-            ->toArray();
+            ->get();
 
-        return view('freelancer.home', compact('profile', 'jobs', 'activeContracts', 'pastContracts'));
+        // Stats
+        $totalEarnings = $profile->contracts()->where('status', 'completed')->sum('final_price');
+        $proposalsCount = $profile->proposals()->where('status', 'sent')->count();
+
+        return view('freelancer.home', compact('profile', 'recommendedJobs', 'activeContracts', 'totalEarnings', 'proposalsCount'));
     }
 
     public function jobsIndex(Request $request)
     {
-        // Start a query builder
-        $query = Job::with('skills')->where('status', 'open');
+        $query = Job::with(['skills', 'clientProfile.user'])->where('status', 'open');
 
-        // 1. Search by Title or Description
+        // Search
         if ($q = $request->input('q')) {
             $query->where(function($sub) use ($q) {
                 $sub->where('title', 'like', "%{$q}%")
@@ -48,19 +54,17 @@ class FreelancerController extends Controller
             });
         }
 
-        // 2. Filter by Type
+        // Filters
         if ($type = $request->input('type')) {
             $query->where('type', $type);
         }
 
-        // 3. Filter by Skill
         if ($skillId = $request->input('skill_id')) {
             $query->whereHas('skills', function($q) use ($skillId) {
-                $q->where('id', $skillId);
+                $q->where('skills.id', $skillId);
             });
         }
 
-        // 4. Filter by Budget
         if ($min = $request->input('budget_min')) {
             $query->where('budget', '>=', $min);
         }
@@ -68,40 +72,40 @@ class FreelancerController extends Controller
             $query->where('budget', '<=', $max);
         }
 
-        $jobs = $query->latest()->get();
+        // Pagination is better than get() for lists
+        $jobs = $query->latest()->paginate(10)->withQueryString();
         $skills = Skill::orderBy('name')->get();
 
-        // Pass back inputs so filters stay filled
-        return view('freelancer.jobs.index', [
-            'jobs' => $jobs, 
-            'skills' => $skills,
-            'q' => $request->input('q'),
-            'type' => $request->input('type'),
-            'skillId' => $request->input('skill_id'),
-            'budgetMin' => $request->input('budget_min'),
-            'budgetMax' => $request->input('budget_max'),
-        ]);
+        return view('freelancer.jobs.index', compact('jobs', 'skills'));
     }
 
     public function jobShow($id)
     {
-        $jobModel = Job::with('skills', 'clientProfile')->findOrFail($id);
-        $job = $jobModel->toArray();
-        $job['skills'] = $jobModel->skills->pluck('id')->toArray();
-        $skills = Skill::orderBy('name')->get();
+        $job = Job::with(['skills', 'clientProfile.user', 'proposals'])->findOrFail($id);
+        $profile = Auth::user()->freelancerProfile;
 
-        return view('freelancer.jobs.show', compact('job', 'skills'));
+        // Check if user already submitted a proposal
+        $existingProposal = Proposal::where('job_id', $job->id)
+            ->where('freelancer_profile_id', $profile->id)
+            ->first();
+
+        return view('freelancer.jobs.show', compact('job', 'existingProposal'));
     }
 
     public function submitProposal(Request $request, $id)
     {
         $request->validate([
-            'cover_letter' => 'required|string',
+            'cover_letter' => 'required|string|min:50',
             'bid_amount' => 'required|numeric|min:1',
         ]);
 
         $job = Job::findOrFail($id);
         $profile = Auth::user()->freelancerProfile;
+
+        // Prevent duplicate proposals
+        if(Proposal::where('job_id', $job->id)->where('freelancer_profile_id', $profile->id)->exists()){
+            return back()->withErrors(['msg' => 'You have already applied to this job.']);
+        }
 
         Proposal::create([
             'job_id' => $job->id,
@@ -118,16 +122,9 @@ class FreelancerController extends Controller
     {
         $profile = Auth::user()->freelancerProfile;
         $skills = Skill::orderBy('name')->get();
-        
-        // Frontend expects 'profile' array with 'skills' key containing IDs
-        // We format it to match your frontend logic
-        $profileData = $profile->toArray();
-        $profileData['skills'] = $profile->skills->pluck('id')->toArray();
+        $mySkills = $profile->skills->pluck('id')->toArray();
 
-        return view('freelancer.skills', [
-            'profile' => $profileData, // Array for blade compatibility
-            'skills' => $skills
-        ]);
+        return view('freelancer.skills', compact('skills', 'mySkills'));
     }
 
     public function skillsUpdate(Request $request)
@@ -135,21 +132,31 @@ class FreelancerController extends Controller
         $profile = Auth::user()->freelancerProfile;
         $profile->skills()->sync($request->input('skills', []));
 
-        return back()->with('status', 'Skills updated successfully!');
+        return redirect()->route('freelancer.home')->with('status', 'Skills updated successfully!');
     }
 
     public function contractsIndex()
     {
         $profile = Auth::user()->freelancerProfile;
-        $active = $profile->contracts()->where('status', 'active')->get();
-        $history = $profile->contracts()->whereNot('status', 'active')->get();
+        
+        $activeContracts = $profile->contracts()
+            ->with(['job.clientProfile.user'])
+            ->where('status', 'active')
+            ->latest()
+            ->get();
+            
+        $pastContracts = $profile->contracts()
+            ->with(['job.clientProfile.user'])
+            ->whereIn('status', ['completed', 'cancelled', 'disputed'])
+            ->latest()
+            ->get();
 
-        return view('freelancer.contracts.index', compact('active', 'history'));
+        return view('freelancer.contracts.index', compact('activeContracts', 'pastContracts'));
     }
 
     public function profileShow()
     {
-        $profile = Auth::user()->freelancerProfile;
+        $profile = Auth::user()->freelancerProfile->load('skills', 'user');
         return view('freelancer.profile.show', compact('profile'));
     }
 
@@ -162,23 +169,20 @@ class FreelancerController extends Controller
     public function profileUpdate(Request $request)
     {
         $request->validate([
-            'headline' => 'required|string|max:255',
+            'headline' => 'required|string|max:100',
             'rate_per_hour' => 'required|numeric|min:0',
             'portfolio_url' => 'nullable|url',
+            'bio' => 'nullable|string|max:1000'
         ]);
 
-        /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        $user->freelancerProfile()->updateOrCreate(
-            ['user_id' => $user->id],
-            [
-                'headline' => $request->headline,
-                'rate_per_hour' => $request->rate_per_hour,
-                'bio' => $request->bio,
-                'portfolio_url' => $request->portfolio_url
-            ]
-        );
+        $user->freelancerProfile()->update([
+            'headline' => $request->headline,
+            'rate_per_hour' => $request->rate_per_hour,
+            'bio' => $request->bio,
+            'portfolio_url' => $request->portfolio_url
+        ]);
 
         return redirect()->route('freelancer.profile.show')->with('status', 'Profile updated!');
     }

@@ -4,43 +4,68 @@
 
 @section('content')
 <div class="row justify-content-center">
-    <div class="col-md-4">
-        <h3 class="text-center mb-4">Register</h3>
-        
-        <form method="POST" action="{{ route('register.submit') }}">
-            @csrf
-            
-            <div class="mb-3">
-                <label class="form-label">Full Name</label>
-                <input type="text" name="name" class="form-control" value="{{ old('name') }}" required autofocus>
-                @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
-            </div>
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4 fw-bold">Create an Account</h3>
+                
+                <form method="POST" action="{{ route('register.submit') }}">
+                    @csrf
+                    
+                    {{-- Role Selection --}}
+                    <div class="mb-4 p-3 bg-light rounded border">
+                        <label class="form-label fw-bold mb-2">I want to...</label>
+                        <div class="d-flex gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="role" id="role_freelancer" value="freelancer" {{ old('role', 'freelancer') == 'freelancer' ? 'checked' : '' }}>
+                                <label class="form-check-label" for="role_freelancer">
+                                    Work as a Freelancer
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="role" id="role_client" value="client" {{ old('role') == 'client' ? 'checked' : '' }}>
+                                <label class="form-check-label" for="role_client">
+                                    Hire for a Project
+                                </label>
+                            </div>
+                        </div>
+                        @error('role') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
 
-            <div class="mb-3">
-                <label class="form-label">Email Address</label>
-                <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
-                @error('email') <span class="text-danger small">{{ $message }}</span> @enderror
-            </div>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ old('name') }}" required autofocus placeholder="e.g. John Doe">
+                        @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
 
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required>
-                @error('password') <span class="text-danger small">{{ $message }}</span> @enderror
-            </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="email" class="form-control" value="{{ old('email') }}" required placeholder="name@example.com">
+                        @error('email') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
 
-            <div class="mb-3">
-                <label class="form-label">Confirm Password</label>
-                <input type="password" name="password_confirmation" class="form-control" required>
-            </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" required>
+                        @error('password') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
 
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary">Register</button>
-            </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" name="password_confirmation" class="form-control" required>
+                    </div>
 
-            <div class="text-center mt-3">
-                <a href="{{ route('login') }}">Already have an account? Login</a>
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <span class="text-muted">Already have an account?</span> 
+                        <a href="{{ route('login') }}" class="text-decoration-none">Login</a>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 @endsection

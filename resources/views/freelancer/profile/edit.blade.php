@@ -1,33 +1,49 @@
 @extends('layouts.app')
 
-{{-- TODO : GANTI PAGE TITLE --}}
 @section('title', 'Edit Profile')
 
 @section('content')
-<h2 class="mb-3">Edit Profile</h2>
-<form method="post" action="{{ route('freelancer.profile.update') }}">
-  @csrf
-  <div class="row g-3">
-    <div class="col-md-6">
-      <label class="form-label">Headline</label>
-      <input type="text" class="form-control" name="headline" value="{{ $profile['headline'] }}">
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h4 class="fw-bold mb-0">Edit Profile</h4>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ route('freelancer.profile.update') }}" method="POST">
+                    @csrf
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Professional Headline</label>
+                        <input type="text" name="headline" class="form-control" value="{{ old('headline', $profile->headline) }}" placeholder="e.g. Senior Laravel Developer">
+                        @error('headline') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Hourly Rate ($)</label>
+                        <input type="number" name="rate_per_hour" class="form-control" value="{{ old('rate_per_hour', $profile->rate_per_hour) }}" step="0.01">
+                        @error('rate_per_hour') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Portfolio URL</label>
+                        <input type="url" name="portfolio_url" class="form-control" value="{{ old('portfolio_url', $profile->portfolio_url) }}" placeholder="https://...">
+                        @error('portfolio_url') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Bio / Summary</label>
+                        <textarea name="bio" rows="6" class="form-control">{{ old('bio', $profile->bio) }}</textarea>
+                        @error('bio') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ route('freelancer.profile.show') }}" class="btn btn-light">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="col-md-6">
-      <label class="form-label">Rate per hour</label>
-      <input type="number" step="0.01" class="form-control" name="rate_per_hour" value="{{ $profile['rate_per_hour'] }}">
-    </div>
-    <div class="col-12">
-      <label class="form-label">Bio</label>
-      <textarea class="form-control" name="bio" rows="4">{{ $profile['bio'] }}</textarea>
-    </div>
-    <div class="col-12">
-      <label class="form-label">Portfolio URL</label>
-      <input type="url" class="form-control" name="portfolio_url" value="{{ $profile['portfolio_url'] }}">
-    </div>
-  </div>
-  <div class="mt-3">
-    <button class="btn btn-primary" type="submit">Save</button>
-    <span class="form-text ms-2">// TODO: Save to DB</span>
-  </div>
-</form>
+</div>
 @endsection

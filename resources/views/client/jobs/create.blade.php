@@ -1,53 +1,76 @@
 @extends('layouts.app')
 
-{{-- TODO : GANTI PAGE TITLE --}}
-@section('title', 'Create Jobs')
+@section('title', 'Post a Job')
 
 @section('content')
-<h2 class="mb-3">Post a Job</h2>
-<form method="post" action="{{ route('client.jobs.store') }}">
-  @csrf
-  <div class="row g-3">
-    <div class="col-md-6">
-      <label class="form-label">Title</label>
-      <input type="text" class="form-control" name="title" placeholder="e.g. Build a Company Website">
-    </div>
-    <div class="col-md-3">
-      <label class="form-label">Type</label>
-      <select class="form-select" name="type">
-        <option value="fixed_price">Fixed price</option>
-        <option value="hourly">Hourly</option>
-      </select>
-    </div>
-    <div class="col-md-3">
-      <label class="form-label">Budget</label>
-      <input type="number" step="0.01" class="form-control" name="budget" placeholder="e.g. 2000">
-    </div>
-    <div class="col-12">
-      <label class="form-label">Description</label>
-      <textarea class="form-control" name="description" rows="5" placeholder="What needs to be done?"></textarea>
-    </div>
-    <div class="col-md-4">
-      <label class="form-label">Deadline</label>
-      <input type="date" class="form-control" name="deadline">
-    </div>
-    <div class="col-12">
-      <label class="form-label">Skills</label>
-      <div class="row g-2">
-        @foreach ($skills as $s)
-          <div class="col-6 col-md-4 col-lg-3">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="skills[]" id="skill-{{ $s['id'] }}" value="{{ $s['id'] }}">
-              <label class="form-check-label" for="skill-{{ $s['id'] }}">{{ $s['name'] }}</label>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h4 class="fw-bold mb-0">Post a New Job</h4>
             </div>
-          </div>
-        @endforeach
-      </div>
+            <div class="card-body p-4">
+                <form action="{{ route('client.jobs.store') }}" method="POST">
+                    @csrf
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Job Title</label>
+                        <input type="text" name="title" class="form-control" value="{{ old('title') }}" placeholder="e.g. React Developer for SaaS Project" required>
+                        @error('title') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea name="description" rows="6" class="form-control" placeholder="Describe the project details, requirements, and deliverables..." required>{{ old('description') }}</textarea>
+                        <div class="form-text">Be detailed. Good descriptions attract better talent.</div>
+                        @error('description') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Budget ($)</label>
+                            <input type="number" name="budget" class="form-control" value="{{ old('budget') }}" step="0.01" required>
+                            @error('budget') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Payment Type</label>
+                            <select name="type" class="form-select">
+                                <option value="fixed_price">Fixed Price</option>
+                                <option value="hourly">Hourly Rate</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Required Skills</label>
+                        <div class="card bg-light border-0 p-3">
+                            <div class="row row-cols-2 row-cols-md-3 g-2" style="max-height: 200px; overflow-y: auto;">
+                                @foreach($skills as $skill)
+                                    <div class="col">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="skills[]" value="{{ $skill->id }}" id="skill_{{ $skill->id }}">
+                                            <label class="form-check-label" for="skill_{{ $skill->id }}">{{ $skill->name }}</label>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @error('skills') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Application Deadline</label>
+                        <input type="date" name="deadline" class="form-control w-auto" value="{{ old('deadline') }}" required>
+                        @error('deadline') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ route('client.jobs.index') }}" class="btn btn-light">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">Post Job Now</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="mt-3">
-    <button class="btn btn-primary" type="submit">Create Job</button>
-    <span class="form-text ms-2">// TODO: Save to DB</span>
-  </div>
-</form>
+</div>
 @endsection

@@ -23,7 +23,11 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended(route('landing'));
+            
+            $role = session('active_role', 'freelancer');
+            session(['active_role' => $role]);
+            
+            return redirect()->intended(route($role . '.home'));
         }
 
         return back()->withErrors([
@@ -31,7 +35,6 @@ class AuthController extends Controller
         ])->onlyInput('email');
     }
 
-    // --- REGISTER ---
     public function showRegister()
     {
         return view('auth.register');
@@ -43,6 +46,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:freelancer,client',
         ]);
 
         // 1. Create the User
@@ -52,17 +56,13 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // 2. Auto-create an empty Client Profile
-        // We set a default company name based on their user name
         $user->clientProfile()->create([
-            'company_name' => $request->name . "'s Company", 
+            'company_name' => $request->role === 'client' ? $request->name . "'s Company" : null, 
             'website_url'  => null,
         ]);
 
-        // 3. Auto-create an empty Freelancer Profile
-        // We set default values to avoid null issues
         $user->freelancerProfile()->create([
-            'headline'      => 'New Freelancer',
+            'headline'      => $request->role === 'freelancer' ? 'New Freelancer' : null,
             'rate_per_hour' => 0,
             'bio'           => null,
             'portfolio_url' => null,
@@ -70,10 +70,11 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('landing')->with('status', 'Account created! You can now hire or work.');
+        session(['active_role' => $request->role]);
+
+        return redirect()->route($request->role . '.home')->with('status', 'Account created! Welcome.');
     }
 
-    // --- LOGOUT ---
     public function logout(Request $request)
     {
         Auth::logout();
