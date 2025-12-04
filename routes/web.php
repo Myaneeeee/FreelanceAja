@@ -5,8 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\FreelancerController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\LocaleController;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
+
+// Language switching
+Route::get('/locale/{locale}', [LocaleController::class, 'setLocale'])->name('locale.set');
 
 // Freelancer routes
 Route::prefix('freelancer')->name('freelancer.')->group(function () {

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Browse Jobs')
+@section('title', __('freelancer.browse_jobs'))
 
 @section('content')
 <div class="row">
@@ -8,26 +8,26 @@
     <div class="col-lg-3 mb-4">
         <div class="card shadow-sm border-0">
             <div class="card-body">
-                <h5 class="fw-bold mb-3">Filter Jobs</h5>
+                <h5 class="fw-bold mb-3">{{ __('freelancer.filter_jobs') }}</h5>
                 <form action="{{ route('freelancer.jobs.index') }}" method="GET">
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Search</label>
-                        <input type="text" name="q" class="form-control" value="{{ request('q') }}" placeholder="Keywords...">
+                        <label class="form-label small fw-bold">{{ __('freelancer.search') }}</label>
+                        <input type="text" name="q" class="form-control" value="{{ request('q') }}" placeholder="{{ __('freelancer.keywords') }}">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Job Type</label>
+                        <label class="form-label small fw-bold">{{ __('freelancer.job_type') }}</label>
                         <select name="type" class="form-select">
-                            <option value="">All Types</option>
-                            <option value="fixed_price" {{ request('type') == 'fixed_price' ? 'selected' : '' }}>Fixed Price</option>
-                            <option value="hourly" {{ request('type') == 'hourly' ? 'selected' : '' }}>Hourly</option>
+                            <option value="">{{ __('client.post_job') }}</option>
+                            <option value="fixed_price" {{ request('type') == 'fixed_price' ? 'selected' : '' }}>{{ __('client.fixed_price') }}</option>
+                            <option value="hourly" {{ request('type') == 'hourly' ? 'selected' : '' }}>{{ __('client.hourly') }}</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Category (Skill)</label>
+                        <label class="form-label small fw-bold">{{ __('freelancer.category_skill') }}</label>
                         <select name="skill_id" class="form-select">
-                            <option value="">All Skills</option>
+                            <option value="">{{ __('freelancer.skills') }}</option>
                             @foreach($skills as $skill)
                                 <option value="{{ $skill->id }}" {{ request('skill_id') == $skill->id ? 'selected' : '' }}>
                                     {{ $skill->name }}
@@ -37,13 +37,13 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Min Budget ($)</label>
+                        <label class="form-label small fw-bold">{{ __('freelancer.min_budget') }}</label>
                         <input type="number" name="budget_min" class="form-control" value="{{ request('budget_min') }}">
                     </div>
 
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Apply Filters</button>
-                        <a href="{{ route('freelancer.jobs.index') }}" class="btn btn-link text-decoration-none btn-sm mt-1">Reset</a>
+                        <button type="submit" class="btn btn-primary">{{ __('freelancer.apply_filters') }}</button>
+                        <a href="{{ route('freelancer.jobs.index') }}" class="btn btn-link text-decoration-none btn-sm mt-1">{{ __('freelancer.reset') }}</a>
                     </div>
                 </form>
             </div>
@@ -53,8 +53,8 @@
     <!-- Job List -->
     <div class="col-lg-9">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="fw-bold">Available Jobs</h4>
-            <span class="text-muted small">{{ $jobs->total() }} results found</span>
+            <h4 class="fw-bold">{{ __('freelancer.available_jobs') }}</h4>
+            <span class="text-muted small">{{ $jobs->total() }} {{ __('freelancer.results_found') }}</span>
         </div>
 
         @forelse($jobs as $job)
@@ -66,7 +66,7 @@
                             <a href="{{ route('freelancer.jobs.show', $job->id) }}" class="text-decoration-none">{{ $job->title }}</a>
                         </h5>
                         <p class="text-muted small mb-2">
-                            Posted {{ $job->created_at->diffForHumans() }} by {{ $job->clientProfile->company_name ?? $job->clientProfile->user->name }}
+                            {{ __('freelancer.posted') }} {{ $job->created_at->diffForHumans() }} {{ __('common.home') }} {{ $job->clientProfile->company_name ?? $job->clientProfile->user->name }}
                         </p>
                     </div>
                     <div class="text-end">
@@ -86,7 +86,7 @@
         </div>
         @empty
         <div class="alert alert-info text-center">
-            No jobs found matching your criteria. Try adjusting your filters.
+            {{ __('freelancer.no_jobs_found') }}
         </div>
         @endforelse
 

@@ -5,12 +5,12 @@
 @section('content')
 <div class="row mb-4">
     <div class="col-md-8">
-        <h2 class="fw-bold text-primary">Welcome back, {{ Auth::user()->name }}!</h2>
-        <p class="text-muted">Here is what's happening with your projects today.</p>
+        <h2 class="fw-bold text-primary">{{ __('freelancer.welcome_back', ['name' => Auth::user()->name]) }}</h2>
+        <p class="text-muted">{{ __('freelancer.dashboard_subtitle') }}</p>
     </div>
     <div class="col-md-4 text-end">
         <a href="{{ route('freelancer.jobs.index') }}" class="btn btn-primary">
-            Find Work
+            {{ __('freelancer.find_work') }}
         </a>
     </div>
 </div>
@@ -20,7 +20,7 @@
     <div class="col-md-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
-                <h6 class="text-muted text-uppercase small">Total Earnings</h6>
+                <h6 class="text-muted text-uppercase small">{{ __('freelancer.total_earnings') }}</h6>
                 <h3 class="fw-bold text-success">${{ number_format($totalEarnings, 2) }}</h3>
             </div>
         </div>
@@ -28,7 +28,7 @@
     <div class="col-md-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
-                <h6 class="text-muted text-uppercase small">Active Contracts</h6>
+                <h6 class="text-muted text-uppercase small">{{ __('freelancer.active_contracts') }}</h6>
                 <h3 class="fw-bold text-primary">{{ $activeContracts->count() }}</h3>
             </div>
         </div>
@@ -36,7 +36,7 @@
     <div class="col-md-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
-                <h6 class="text-muted text-uppercase small">Pending Proposals</h6>
+                <h6 class="text-muted text-uppercase small">{{ __('common.pending_proposals') }}</h6>
                 <h3 class="fw-bold text-secondary">{{ $proposalsCount }}</h3>
             </div>
         </div>
@@ -48,7 +48,7 @@
     <div class="col-lg-7 mb-4">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white border-bottom-0 pt-4 px-4">
-                <h5 class="fw-bold mb-0">Active Contracts</h5>
+                <h5 class="fw-bold mb-0">{{ __('freelancer.active_contracts') }}</h5>
             </div>
             <div class="card-body p-0">
                 @if($activeContracts->count() > 0)
@@ -63,15 +63,15 @@
                                 <span class="badge bg-success-subtle text-success">Active</span>
                             </div>
                             <div class="mt-2 text-end">
-                                <a href="{{ route('freelancer.contracts.index') }}" class="btn btn-sm btn-outline-secondary">View Details</a>
+                                <a href="{{ route('freelancer.contracts.index') }}" class="btn btn-sm btn-outline-secondary">{{ __('common.view_details') }}</a>
                             </div>
                         </div>
                         @endforeach
                     </div>
                 @else
                     <div class="p-4 text-center text-muted">
-                        <p>No active contracts yet.</p>
-                        <a href="{{ route('freelancer.jobs.index') }}" class="btn btn-outline-primary btn-sm">Start Applying</a>
+                        <p>{{ __('freelancer.no_active_contracts') }}</p>
+                        <a href="{{ route('freelancer.jobs.index') }}" class="btn btn-outline-primary btn-sm">{{ __('freelancer.start_applying') }}</a>
                     </div>
                 @endif
             </div>
@@ -82,7 +82,7 @@
     <div class="col-lg-5">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white border-bottom-0 pt-4 px-4">
-                <h5 class="fw-bold mb-0">Jobs For You</h5>
+                <h5 class="fw-bold mb-0">{{ __('freelancer.jobs_for_you') }}</h5>
             </div>
             <div class="card-body">
                 @forelse($recommendedJobs as $job)
@@ -98,8 +98,8 @@
                     </div>
                 @empty
                     <div class="text-center py-3">
-                        <p class="text-muted small">Update your skills to see recommendations.</p>
-                        <a href="{{ route('freelancer.skills.edit') }}" class="btn btn-sm btn-outline-secondary">Edit Skills</a>
+                        <p class="text-muted small">{{ __('freelancer.update_your_skills') }}</p>
+                        <a href="{{ route('freelancer.skills.edit') }}" class="btn btn-sm btn-outline-secondary">{{ __('freelancer.edit_skills') }}</a>
                     </div>
                 @endforelse
             </div>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'My Profile')
+@section('title', __('freelancer.my_profile'))
 
 @section('content')
 <div class="row justify-content-center">
@@ -18,41 +18,41 @@
             <div class="card-body p-5">
                 <div class="d-flex justify-content-between align-items-start mb-4">
                     <div>
-                        <h4 class="fw-bold text-primary">{{ $profile->headline ?? 'No Headline Set' }}</h4>
+                        <h4 class="fw-bold text-primary">{{ $profile->headline ?? __('freelancer.no_headline') }}</h4>
                         <h5 class="text-muted">${{ number_format($profile->rate_per_hour, 2) }} / hr</h5>
                     </div>
                     <a href="{{ route('freelancer.profile.edit') }}" class="btn btn-outline-primary">
-                        Edit Profile
+                        {{ __('freelancer.edit_profile') }}
                     </a>
                 </div>
 
                 <hr>
 
                 <div class="mb-4">
-                    <h5 class="fw-bold mb-3">About Me</h5>
+                    <h5 class="fw-bold mb-3">{{ __('freelancer.about_me') }}</h5>
                     @if($profile->bio)
                         <p class="text-secondary" style="white-space: pre-line;">{{ $profile->bio }}</p>
                     @else
-                        <p class="text-muted fst-italic">You haven't added a bio yet.</p>
+                        <p class="text-muted fst-italic">{{ __('freelancer.no_bio') }}</p>
                     @endif
                 </div>
 
                 <div class="mb-4">
-                    <h5 class="fw-bold mb-3">Skills</h5>
+                    <h5 class="fw-bold mb-3">{{ __('freelancer.skills') }}</h5>
                     <div class="d-flex flex-wrap gap-2">
                         @forelse($profile->skills as $skill)
                             <span class="badge bg-light text-dark border px-3 py-2">{{ $skill->name }}</span>
                         @empty
-                            <span class="text-muted fst-italic">No skills selected. <a href="{{ route('freelancer.skills.edit') }}">Add Skills</a></span>
+                            <span class="text-muted fst-italic">{{ __('freelancer.no_skills') }} <a href="{{ route('freelancer.skills.edit') }}">{{ __('freelancer.add_skills') }}</a></span>
                         @endforelse
                     </div>
                 </div>
 
                 @if($profile->portfolio_url)
                 <div class="mb-4">
-                    <h5 class="fw-bold mb-3">Portfolio</h5>
+                    <h5 class="fw-bold mb-3">{{ __('freelancer.portfolio') }}</h5>
                     <a href="{{ $profile->portfolio_url }}" target="_blank" class="text-decoration-none fw-bold">
-                        Visit Portfolio &rarr;
+                        {{ __('freelancer.visit_portfolio') }} &rarr;
                     </a>
                 </div>
                 @endif

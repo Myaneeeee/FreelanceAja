@@ -1,27 +1,27 @@
 @extends('layouts.app')
 
-@section('title', 'My Contracts')
+@section('title', __('freelancer.my_contracts'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">My Contracts</h2>
+    <h2 class="fw-bold">{{ __('freelancer.my_contracts') }}</h2>
 </div>
 
 <!-- Active Contracts -->
 <div class="card shadow-sm border-0 mb-5">
     <div class="card-header bg-success-subtle text-success fw-bold py-3">
-        Active Contracts
+        {{ __('freelancer.active_contracts') }}
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4">Job Title</th>
-                        <th>Client</th>
-                        <th>Start Date</th>
-                        <th>Price</th>
-                        <th>Status</th>
+                        <th class="ps-4">{{ __('client.job') }}</th>
+                        <th>{{ __('freelancer.client') }}</th>
+                        <th>{{ __('freelancer.start_date') }}</th>
+                        <th>{{ __('freelancer.price') }}</th>
+                        <th>{{ __('client.status') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,11 +35,11 @@
                         <td>{{ $contract->job->clientProfile->user->name }}</td>
                         <td>{{ $contract->start_date }}</td>
                         <td class="fw-bold">${{ number_format($contract->final_price, 2) }}</td>
-                        <td><span class="badge bg-success">Active</span></td>
+                        <td><span class="badge bg-success">{{ __('freelancer.active_contracts') }}</span></td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center py-4 text-muted">You have no active contracts.</td>
+                        <td colspan="5" class="text-center py-4 text-muted">{{ __('freelancer.no_active_contracts') }}</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -51,18 +51,18 @@
 <!-- Contract History -->
 <div class="card shadow-sm border-0">
     <div class="card-header bg-light fw-bold py-3">
-        Work History
+        {{ __('freelancer.work_history') }}
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4">Job Title</th>
-                        <th>Client</th>
-                        <th>End Date</th>
-                        <th>Final Price</th>
-                        <th>Status</th>
+                        <th class="ps-4">{{ __('client.job') }}</th>
+                        <th>{{ __('freelancer.client') }}</th>
+                        <th>{{ __('freelancer.end_date') }}</th>
+                        <th>{{ __('freelancer.final_price') }}</th>
+                        <th>{{ __('client.status') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,7 +70,7 @@
                     <tr>
                         <td class="ps-4 fw-bold">{{ $contract->job->title }}</td>
                         <td>{{ $contract->job->clientProfile->user->name }}</td>
-                        <td>{{ $contract->end_date ?? 'N/A' }}</td>
+                        <td>{{ $contract->end_date ?? __('freelancer.n_a') }}</td>
                         <td>${{ number_format($contract->final_price, 2) }}</td>
                         <td>
                             <span class="badge 
@@ -81,7 +81,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center py-4 text-muted">No past contracts found.</td>
+                        <td colspan="5" class="text-center py-4 text-muted">{{ __('freelancer.no_past_contracts') }}</td>
                     </tr>
                     @endforelse
                 </tbody>

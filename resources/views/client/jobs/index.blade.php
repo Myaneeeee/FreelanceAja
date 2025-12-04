@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'My Jobs')
+@section('title', __('client.my_job_postings'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">My Job Postings</h2>
-    <a href="{{ route('client.jobs.create') }}" class="btn btn-primary">+ Post Job</a>
+    <h2 class="fw-bold">{{ __('client.my_job_postings') }}</h2>
+    <a href="{{ route('client.jobs.create') }}" class="btn btn-primary">+ {{ __('client.post_job') }}</a>
 </div>
 
 <div class="card shadow-sm border-0">
@@ -14,12 +14,12 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4" style="width: 40%;">Job Title</th>
-                        <th>Created</th>
-                        <th>Budget</th>
-                        <th>Proposals</th>
-                        <th>Status</th>
-                        <th>Action</th>
+                        <th class="ps-4" style="width: 40%;">{{ __('client.job_title') }}</th>
+                        <th>{{ __('client.created') }}</th>
+                        <th>{{ __('client.budget') }}</th>
+                        <th>{{ __('client.proposals') }}</th>
+                        <th>{{ __('client.status') }}</th>
+                        <th>{{ __('client.action') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -33,30 +33,30 @@
                         <td>${{ number_format($job->budget) }}</td>
                         <td>
                             @if($job->new_proposals_count > 0)
-                                <span class="badge bg-danger rounded-pill">{{ $job->new_proposals_count }} New</span>
+                                <span class="badge bg-danger rounded-pill">{{ $job->new_proposals_count }} {{ __('client.post_job') }}</span>
                             @endif
-                            <span class="text-muted small ms-1">{{ $job->proposals_count }} Total</span>
+                            <span class="text-muted small ms-1">{{ $job->proposals_count }} {{ __('client.post_job') }}</span>
                         </td>
                         <td>
                             @if($job->status == 'open')
-                                <span class="badge bg-success-subtle text-success">Open</span>
+                                <span class="badge bg-success-subtle text-success">{{ __('client.post_job') }}</span>
                             @elseif($job->status == 'in_progress')
-                                <span class="badge bg-primary-subtle text-primary">In Progress</span>
+                                <span class="badge bg-primary-subtle text-primary">{{ __('client.post_job') }}</span>
                             @else
                                 <span class="badge bg-secondary">{{ ucfirst($job->status) }}</span>
                             @endif
                         </td>
                         <td>
                             <a href="{{ route('client.jobs.proposals', $job->id) }}" class="btn btn-sm btn-outline-primary">
-                                Manage
+                                {{ __('client.manage') }}
                             </a>
                         </td>
                     </tr>
                     @empty
                     <tr>
                         <td colspan="6" class="text-center py-5">
-                            <p class="text-muted mb-2">You haven't posted any jobs yet.</p>
-                            <a href="{{ route('client.jobs.create') }}" class="btn btn-sm btn-primary">Create Your First Job</a>
+                            <p class="text-muted mb-2">{{ __('client.no_jobs_yet') }}</p>
+                            <a href="{{ route('client.jobs.create') }}" class="btn btn-sm btn-primary">{{ __('client.create_first_job') }}</a>
                         </td>
                     </tr>
                     @endforelse

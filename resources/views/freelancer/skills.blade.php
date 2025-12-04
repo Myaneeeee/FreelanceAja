@@ -7,8 +7,8 @@
     <div class="col-lg-8">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white py-3">
-                <h4 class="fw-bold mb-0">Manage Skills</h4>
-                <p class="text-muted small mb-0">Select the skills that best describe your expertise.</p>
+                <h4 class="fw-bold mb-0">{{ __('freelancer.manage_skills') }}</h4>
+                <p class="text-muted small mb-0">{{ __('freelancer.select_skills') }}</p>
             </div>
             <div class="card-body p-4">
                 <form action="{{ route('freelancer.skills.update') }}" method="POST">
@@ -34,8 +34,8 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">Update Skills</button>
-                        <a href="{{ route('freelancer.home') }}" class="btn btn-link text-decoration-none text-muted">Back to Dashboard</a>
+                        <button type="submit" class="btn btn-primary btn-lg">{{ __('freelancer.update_skills') }}</button>
+                        <a href="{{ route('freelancer.home') }}" class="btn btn-link text-decoration-none text-muted">{{ __('freelancer.back_to_dashboard') }}</a>
                     </div>
                 </form>
             </div>
