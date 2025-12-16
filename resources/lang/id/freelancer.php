@@ -54,6 +54,7 @@ return [
     'client' => 'Klien',
     'price' => 'Harga',
     'final_price' => 'Harga Final',
+    'start_date' => 'Tanggal Mulai',
     'end_date' => 'Tanggal Berakhir',
     'n_a' => 'N/A',
     'posted' => 'Diposting',

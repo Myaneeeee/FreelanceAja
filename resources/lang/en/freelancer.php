@@ -54,6 +54,7 @@ return [
     'client' => 'Client',
     'price' => 'Price',
     'final_price' => 'Final Price',
+    'start_date' => 'Start Date',
     'end_date' => 'End Date',
     'n_a' => 'N/A',
     'posted' => 'Posted',
