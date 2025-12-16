@@ -9,7 +9,7 @@
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body p-4">
                 <h2 class="fw-bold mb-3">{{ $job->title }}</h2>
-                
+
                 <div class="mb-4">
                     <span class="badge bg-primary me-2">{{ ucfirst($job->type) }}</span>
                     <span class="text-muted">{{ __('freelancer.posted') }} {{ $job->created_at->format('M d, Y') }}</span>
@@ -77,7 +77,7 @@
                 <h5 class="fw-bold mb-3">{{ __('freelancer.about_client') }}</h5>
                 <p class="fw-bold mb-1">{{ $job->clientProfile->company_name ?? __('freelancer.individual_client') }}</p>
                 <p class="text-muted small mb-3">{{ __('freelancer.member_since') }} {{ $job->clientProfile->created_at->format('Y') }}</p>
-                
+
                 @if($job->clientProfile->website_url)
                     <a href="{{ $job->clientProfile->website_url }}" target="_blank" class="btn btn-outline-secondary btn-sm w-100">
                         {{ __('freelancer.visit_website') }}
@@ -90,7 +90,7 @@
             <div class="card-body">
                 <h6 class="fw-bold">{{ __('freelancer.job_budget') }}</h6>
                 <h3 class="fw-bold text-dark mb-0">${{ number_format($job->budget, 2) }}</h3>
-                <small class="text-muted">{{ ucfirst($job->type) }}</small>
+                <small class="text-muted">{{ ucwords(str_replace('_', ' ', $job->type)) }}</small>
             </div>
         </div>
     </div>
