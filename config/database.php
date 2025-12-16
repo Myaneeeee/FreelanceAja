@@ -14,6 +14,7 @@ return [
     | the connection which will be utilized unless another connection
     | is explicitly specified when you execute a query / statement.
     |
+    |
     */
 
     'default' => env('DB_CONNECTION', 'sqlite'),

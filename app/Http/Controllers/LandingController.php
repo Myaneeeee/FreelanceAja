@@ -8,7 +8,6 @@ use App\Models\Job;
 use App\Models\Skill;
 use Auth;
 use Illuminate\Http\Request;
-use App\Support\DummyData;
 
 class LandingController extends Controller
 {
