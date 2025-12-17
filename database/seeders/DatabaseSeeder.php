@@ -37,12 +37,13 @@ class DatabaseSeeder extends Seeder
         // ==========================================
         // 2. USERS & PROFILES
         // ==========================================
-        
+
         // --- User 1: Ricky (The Client) ---
         $ricky = User::create([
             'name' => 'Ricky',
             'email' => 'ricky@binus.edu',
             'password' => Hash::make('password'),
+            'role' => 'client'
         ]);
         // Ricky's Client Profile (He posts jobs)
         $ricky->clientProfile()->create([
@@ -62,6 +63,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'David',
             'email' => 'david@binus.edu',
             'password' => Hash::make('password'),
+            'role' => 'freelancer'
         ]);
         // David's Client Profile (Default)
         $david->clientProfile()->create([
@@ -82,6 +84,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Visella',
             'email' => 'visella@binus.edu',
             'password' => Hash::make('password'),
+            'role' => 'client'
         ]);
         // Visella's Client Profile
         $visella->clientProfile()->create([
