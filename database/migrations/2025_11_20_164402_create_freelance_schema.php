@@ -89,6 +89,13 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('freelance_schema');
+        Schema::dropIfExists('contracts');
+        Schema::dropIfExists('proposals');
+        Schema::dropIfExists('job_skill');
+        Schema::dropIfExists('jobs');
+        Schema::dropIfExists('freelancer_profile_skill');
+        Schema::dropIfExists('skills');
+        Schema::dropIfExists('freelancer_profiles');
+        Schema::dropIfExists('client_profiles');
     }
 };

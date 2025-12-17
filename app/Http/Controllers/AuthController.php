@@ -55,17 +55,20 @@ class AuthController extends Controller
             'role' => $request->role,
         ]);
 
-        $user->clientProfile()->create([
-            'company_name' => $request->role === 'client' ? $request->name . "'s Company" : null,
-            'website_url'  => null,
-        ]);
-
-        $user->freelancerProfile()->create([
-            'headline'      => $request->role === 'freelancer' ? 'New Freelancer' : null,
-            'rate_per_hour' => 0,
-            'bio'           => null,
-            'portfolio_url' => null,
-        ]);
+        if ($request->role === 'client') {
+            $user->clientProfile()->create([
+                'company_name' => $request->name,
+                'company_description' => null,
+                'website_url'  => null,
+            ]);
+        } else {
+            $user->freelancerProfile()->create([
+                'headline'      => 'New Freelancer',
+                'rate_per_hour' => 0,
+                'bio'           => null,
+                'portfolio_url' => null,
+            ]);
+        }
 
         Auth::login($user);
 
