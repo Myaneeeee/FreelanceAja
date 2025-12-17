@@ -39,6 +39,7 @@ return [
     'no_proposals_received' => 'No proposals received yet.',
     'accepted' => 'Accepted',
     'rejected' => 'Rejected',
+    'reject' => 'Reject',
     'pending_review' => 'Pending Review',
     'bid_amount' => 'Bid Amount',
     'from' => 'From:',

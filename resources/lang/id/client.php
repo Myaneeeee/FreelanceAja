@@ -39,6 +39,7 @@ return [
     'no_proposals_received' => 'Belum ada proposal yang diterima.',
     'accepted' => 'Diterima',
     'rejected' => 'Ditolak',
+    'reject' => 'Tolak',
     'pending_review' => 'Menunggu Review',
     'bid_amount' => 'Jumlah Penawaran',
     'from' => 'Dari:',
