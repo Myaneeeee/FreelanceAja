@@ -11,7 +11,7 @@
                 <h2 class="fw-bold mb-3">{{ $job->title }}</h2>
 
                 <div class="mb-4">
-                    <span class="badge bg-primary me-2">{{ ucfirst($job->type) }}</span>
+                    <span class="badge bg-primary me-2">{{ ucwords(str_replace('_', ' ', $job->type)) }}</span>
                     <span class="text-muted">{{ __('freelancer.posted') }} {{ $job->created_at->format('M d, Y') }}</span>
                 </div>
 

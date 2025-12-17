@@ -86,7 +86,7 @@
             <div class="card h-100 shadow-sm border-0">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge bg-primary-subtle text-primary rounded-pill">{{ ucfirst($job->type) }}</span>
+                        <span class="badge bg-primary-subtle text-primary rounded-pill">{{ ucwords(str_replace('_', ' ', $job->type)) }}</span>
                         <small class="text-muted">{{ $job->created_at->diffForHumans() }}</small>
                     </div>
                     <h5 class="card-title fw-bold">{{ $job->title }}</h5>

@@ -91,7 +91,7 @@
                             <h6 class="fw-bold mb-1">{{ $job->title }}</h6>
                         </a>
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="badge bg-light text-dark border">{{ ucfirst($job->type) }}</span>
+                            <span class="badge bg-light text-dark border">{{ ucwords(str_replace('_', ' ', $job->type)) }}</span>
                             <small class="fw-bold text-primary">${{ number_format($job->budget) }}</small>
                         </div>
                         <p class="small text-muted mb-0 text-truncate">{{ Str::limit($job->description, 60) }}</p>
