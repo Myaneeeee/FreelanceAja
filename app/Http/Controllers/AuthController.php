@@ -23,10 +23,9 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
-            $role = session('active_role', 'freelancer');
+            $role = Auth::user()->role ?? 'freelancer';
             session(['active_role' => $role]);
-            
+
             return redirect()->intended(route($role . '.home'));
         }
 
@@ -49,15 +48,15 @@ class AuthController extends Controller
             'role' => 'required|in:freelancer,client',
         ]);
 
-        // 1. Create the User
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
 
         $user->clientProfile()->create([
-            'company_name' => $request->role === 'client' ? $request->name . "'s Company" : null, 
+            'company_name' => $request->role === 'client' ? $request->name . "'s Company" : null,
             'website_url'  => null,
         ]);
 
