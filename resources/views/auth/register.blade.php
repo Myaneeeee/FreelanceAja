@@ -44,6 +44,22 @@
                         @error('email') <span class="text-danger small">{{ $message }}</span> @enderror
                     </div>
 
+                    {{-- NEW CONTACT FIELDS --}}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Contact Email</label>
+                            <input type="email" name="contact_email" class="form-control" value="{{ old('contact_email') }}" placeholder="For work inquiries" required>
+                            <div class="form-text small">Visible to contracts.</div>
+                            @error('contact_email') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" name="contact_phone" class="form-control" value="{{ old('contact_phone') }}" placeholder="+62..." required>
+                            <div class="form-text small">Visible to contracts.</div>
+                            @error('contact_phone') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label">{{ __('auth.password') }}</label>
                         <input type="password" name="password" class="form-control" required>

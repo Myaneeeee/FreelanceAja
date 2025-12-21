@@ -81,9 +81,9 @@
                             </span>
                         </td>
                         <td class="pe-4 text-end">
-                            <button class="btn btn-sm btn-outline-dark" disabled>
+                            <a href="{{ route('contracts.show', $contract->id) }}" class="btn btn-sm btn-outline-primary">
                                 Manage
-                            </button>
+                            </a>
                         </td>
                     </tr>
                 @empty

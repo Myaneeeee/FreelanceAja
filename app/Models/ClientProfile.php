@@ -10,7 +10,9 @@ class ClientProfile extends Model
         'user_id',
         'company_name',
         'company_description',
-        'website_url'
+        'website_url',
+        'contact_email', 
+        'contact_phone'
     ];
 
     // relationships (user, jobs, contracts)

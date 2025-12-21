@@ -260,4 +260,37 @@ class ClientController extends Controller
 
         return redirect()->route('client.home')->with('status', 'Contract started successfully! Work can begin.');
     }
+
+    public function profileShow()
+    {
+        $client = Auth::user()->clientProfile;
+        return view('client.profile.show', compact('client'));
+    }
+
+    public function profileEdit()
+    {
+        $client = Auth::user()->clientProfile;
+        return view('client.profile.edit', compact('client'));
+    }
+
+    public function profileUpdate(Request $request)
+    {
+        $request->validate([
+            'company_name' => 'required|string|max:255',
+            'website_url' => 'nullable|url',
+            'contact_email' => 'nullable|email',
+            'contact_phone' => 'nullable|string|max:20',
+            'company_description' => 'nullable|string|max:1000',
+        ]);
+
+        Auth::user()->clientProfile()->update([
+            'company_name' => $request->company_name,
+            'website_url' => $request->website_url,
+            'contact_email' => $request->contact_email,
+            'contact_phone' => $request->contact_phone,
+            'company_description' => $request->company_description,
+        ]);
+
+        return redirect()->route('client.profile.show')->with('status', 'Profile updated successfully!');
+    }
 }

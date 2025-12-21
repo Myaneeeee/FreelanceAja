@@ -192,23 +192,35 @@ class FreelancerController extends Controller
         return view('freelancer.skills', compact('skills', 'mySkills'));
     }
     
-    public function contractsIndex()
+    public function contractsIndex(Request $request)
     {
-        $profile = Auth::user()->freelancerProfile;
-        
-        $activeContracts = $profile->contracts()
-            ->with(['job.clientProfile.user'])
-            ->where('status', 'active')
-            ->latest()
-            ->get();
-            
-        $pastContracts = $profile->contracts()
-            ->with(['job.clientProfile.user'])
-            ->whereIn('status', ['completed', 'cancelled', 'disputed'])
-            ->latest()
-            ->get();
+        $user = Auth::user();
+        $query = $user->freelancerProfile->contracts()->with(['job.clientProfile.user']);
 
-        return view('freelancer.contracts.index', compact('activeContracts', 'pastContracts'));
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', 'active');
+        } elseif (!$request->has('status')) {
+            $query->where('status', 'active');
+        }
+
+        if ($request->has('q') && $request->q != '') {
+            $search = $request->q;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('job', function($j) use ($search) {
+                    $j->where('title', 'like', "%{$search}%");
+                })
+                ->orWhereHas('job.clientProfile.user', function($u) use ($search) {
+                    $u->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $contracts = $query->latest()->paginate(10)->withQueryString();
+        
+        $activeCount = $user->freelancerProfile->contracts()->where('status', 'active')->count();
+        $allCount = $user->freelancerProfile->contracts()->count();
+
+        return view('freelancer.contracts.index', compact('contracts', 'activeCount', 'allCount'));
     }
 
     public function profileShow()
@@ -229,6 +241,8 @@ class FreelancerController extends Controller
             'headline' => 'required|string|max:100',
             'rate_per_hour' => 'required|numeric|min:0',
             'portfolio_url' => 'nullable|url',
+            'contact_email' => 'nullable|email',
+            'contact_phone' => 'nullable|string|max:20',
             'bio' => 'nullable|string|max:1000'
         ]);
 
@@ -237,6 +251,8 @@ class FreelancerController extends Controller
         $user->freelancerProfile()->update([
             'headline' => $request->headline,
             'rate_per_hour' => $request->rate_per_hour,
+            'contact_email' => $request->contact_email,
+            'contact_phone' => $request->contact_phone,
             'bio' => $request->bio,
             'portfolio_url' => $request->portfolio_url
         ]);

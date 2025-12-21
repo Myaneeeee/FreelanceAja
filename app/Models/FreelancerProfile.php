@@ -11,7 +11,9 @@ class FreelancerProfile extends Model
         'headline',
         'bio',
         'portfolio_url',
-        'rate_per_hour'
+        'rate_per_hour',
+        'contact_email', 
+        'contact_phone'
     ];
 
     // relationships (user, skills, proposals, contracts)

@@ -46,6 +46,8 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:freelancer,client',
+            'contact_email' => 'required|email|max:255',
+            'contact_phone' => 'required|string|max:20',
         ]);
 
         $user = User::create([
@@ -58,6 +60,8 @@ class AuthController extends Controller
         if ($request->role === 'client') {
             $user->clientProfile()->create([
                 'company_name' => $request->name,
+                'contact_email' => $request->contact_email,
+                'contact_phone' => $request->contact_phone,
                 'company_description' => null,
                 'website_url'  => null,
             ]);
@@ -65,6 +69,8 @@ class AuthController extends Controller
             $user->freelancerProfile()->create([
                 'headline'      => 'New Freelancer',
                 'rate_per_hour' => 0,
+                'contact_email' => $request->contact_email,
+                'contact_phone' => $request->contact_phone,
                 'bio'           => null,
                 'portfolio_url' => null,
             ]);
