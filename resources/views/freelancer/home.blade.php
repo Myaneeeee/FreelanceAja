@@ -5,7 +5,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold text-dark">{{ __('freelancer.welcome_back', ['name' => Auth::user()->name]) }} 👋</h2>
+        <h2 class="fw-bold text-dark">{{ __('freelancer.welcome_back', ['name' => Auth::user()->name]) }}</h2>
         <p class="text-muted mb-0">Here's what's happening with your projects today.</p>
     </div>
     <a href="{{ route('freelancer.jobs.index') }}" class="btn btn-primary btn-lg shadow-sm">
@@ -63,9 +63,7 @@
                     </svg>
                 </div>
             </div>
-            {{-- Note: Since we don't have a specific 'proposals.index' route yet, we link to Jobs or create a filter later. 
-                 For now, I'm linking to Jobs Index as a placeholder or you can create a specific route. --}}
-            <a href="{{ route('freelancer.jobs.index') }}" class="stretched-link"></a>
+            <a href="{{ route('freelancer.proposals.index') }}" class="stretched-link"></a>
         </div>
     </div>
 </div>

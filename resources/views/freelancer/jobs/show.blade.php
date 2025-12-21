@@ -29,11 +29,20 @@
 
         <!-- Proposal Form -->
         @if($existingProposal)
-            <div class="alert alert-success border-0 shadow-sm">
+            {{-- ... (Existing Proposal Alert remains the same) ... --}}
+             <div class="alert alert-success border-0 shadow-sm">
                 <h5 class="alert-heading fw-bold">{{ __('freelancer.proposal_submitted') }}</h5>
                 <p>{{ __('freelancer.already_applied') }} {{ $existingProposal->created_at->format('M d, Y') }}.</p>
                 <hr>
-                <p class="mb-0">{{ __('freelancer.current_status') }} <strong>{{ ucfirst($existingProposal->status) }}</strong></p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <p class="mb-0">{{ __('freelancer.current_status') }} <strong>{{ ucfirst($existingProposal->status) }}</strong></p>
+                    {{-- Optional: Show them what they uploaded --}}
+                    @if($existingProposal->attachment_path)
+                        <a href="{{ asset('storage/' . $existingProposal->attachment_path) }}" target="_blank" class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-file-earmark-pdf"></i> View Attachment
+                        </a>
+                    @endif
+                </div>
             </div>
         @else
             <div class="card shadow-sm border-0">
@@ -41,7 +50,8 @@
                     <h4 class="fw-bold">{{ __('freelancer.submit_proposal') }}</h4>
                 </div>
                 <div class="card-body p-4">
-                    <form action="{{ route('freelancer.jobs.proposals.submit', $job->id) }}" method="POST">
+                    {{-- IMPORTANT: enctype added here --}}
+                    <form action="{{ route('freelancer.jobs.proposals.submit', $job->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -58,6 +68,14 @@
                             <label class="form-label fw-bold">{{ __('freelancer.cover_letter') }}</label>
                             <textarea name="cover_letter" rows="6" class="form-control" placeholder="{{ __('freelancer.cover_letter_placeholder') }}" required>{{ old('cover_letter') }}</textarea>
                             @error('cover_letter') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- NEW FILE INPUT --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Attach File (Optional)</label>
+                            <input type="file" name="attachment" class="form-control" accept="application/pdf">
+                            <div class="form-text">Upload a PDF file (e.g., resume or detailed proposal). Max size 2MB.</div>
+                            @error('attachment') <span class="text-danger small">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="d-flex justify-content-end">

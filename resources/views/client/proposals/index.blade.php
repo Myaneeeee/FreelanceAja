@@ -10,6 +10,16 @@
         <span><i class="bi bi-cash"></i> {{ __('client.budget') }}: Rp. {{ number_format($job->budget) }}</span>
         <span><i class="bi bi-clock"></i> {{ __('client.deadline') }}: {{ \Carbon\Carbon::parse($job->deadline)->format('M d, Y') }}</span>
     </div>
+
+    @if($job->proposals->where('status', 'sent')->count() > 0)
+        <form action="{{ route('client.proposals.reject_all', $job->id) }}" method="POST" 
+              onsubmit="return confirm('Are you sure you want to REJECT ALL pending proposals? This cannot be undone.');">
+            @csrf
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-x-circle me-1"></i> Reject All Pending
+            </button>
+        </form>
+    @endif
 </div>
 
 <div class="row">
@@ -38,6 +48,15 @@
 
                     <div class="bg-light p-3 rounded mb-3 mt-2">
                         <p class="mb-0 text-secondary" style="white-space: pre-line;">{{ $proposal->cover_letter }}</p>
+
+                        @if($proposal->attachment_path)
+                            <div class="mt-3 pt-3 border-top">
+                                <span class="fw-bold small text-uppercase text-muted me-2">Attachment:</span>
+                                <a href="{{ asset('storage/' . $proposal->attachment_path) }}" target="_blank" class="btn btn-sm btn-outline-dark bg-white">
+                                    <i class="bi bi-file-earmark-pdf text-danger"></i> View PDF Proposal
+                                </a>
+                            </div>
+                        @endif
                     </div>
 
                     @if($proposal->status == 'sent')

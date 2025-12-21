@@ -92,19 +92,49 @@ class FreelancerController extends Controller
         return view('freelancer.jobs.show', compact('job', 'existingProposal'));
     }
 
+    public function proposalsIndex(Request $request)
+    {
+        $profile = Auth::user()->freelancerProfile;
+
+        $query = $profile->proposals()->with(['job.clientProfile.user']);
+
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('q') && $request->q != '') {
+            $search = $request->q;
+            $query->whereHas('job', function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhereHas('clientProfile.user', function($u) use ($search) {
+                      $u->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $proposals = $query->latest()->paginate(10)->withQueryString();
+
+        return view('freelancer.proposals.index', compact('proposals'));
+    }
+
     public function submitProposal(Request $request, $id)
     {
         $request->validate([
-            'cover_letter' => 'required|string|min:50',
+            'cover_letter' => 'required|string|min:25',
             'bid_amount' => 'required|numeric|min:1',
+            'attachment' => 'nullable|file|mimes:pdf|max:2048', 
         ]);
 
         $job = Job::findOrFail($id);
         $profile = Auth::user()->freelancerProfile;
 
-        // Prevent duplicate proposals
         if(Proposal::where('job_id', $job->id)->where('freelancer_profile_id', $profile->id)->exists()){
             return back()->withErrors(['msg' => 'You have already applied to this job.']);
+        }
+
+        $path = null;
+        if ($request->hasFile('attachment')) {
+            $path = $request->file('attachment')->store('proposals', 'public');
         }
 
         Proposal::create([
@@ -113,6 +143,7 @@ class FreelancerController extends Controller
             'cover_letter' => $request->cover_letter,
             'bid_amount' => $request->bid_amount,
             'status' => 'sent',
+            'attachment_path' => $path,
         ]);
 
         return redirect()->route('freelancer.jobs.index')->with('status', 'Proposal submitted successfully!');
@@ -121,7 +152,7 @@ class FreelancerController extends Controller
     public function skillsUpdate(Request $request)
     {
         $profile = Auth::user()->freelancerProfile;
-        
+
         $selectedSkillIds = $request->input('skills', []);
 
         if ($request->filled('custom_skills')) {
@@ -131,7 +162,8 @@ class FreelancerController extends Controller
                 $name = trim($name);
                 if (!empty($name)) {
                     $skill = Skill::firstOrCreate(
-                        ['name' => ucwords($name)] // Capitalize
+                        ['name' => ucwords($name)], 
+                        ['is_global' => false] 
                     );
                     
                     if (!in_array($skill->id, $selectedSkillIds)) {
@@ -150,13 +182,16 @@ class FreelancerController extends Controller
     {
         $profile = Auth::user()->freelancerProfile;
 
-        $skills = Skill::orderBy('name')->get();
-        
         $mySkills = $profile->skills->pluck('id')->toArray();
+
+        $skills = Skill::where('is_global', true)
+            ->orWhereIn('id', $mySkills)
+            ->orderBy('name')
+            ->get();
 
         return view('freelancer.skills', compact('skills', 'mySkills'));
     }
-
+    
     public function contractsIndex()
     {
         $profile = Auth::user()->freelancerProfile;

@@ -31,6 +31,9 @@ Route::middleware(['auth'])->group(function () {
         // Contracts
         Route::get('/contracts', [FreelancerController::class, 'contractsIndex'])->name('contracts.index');
 
+        // Proposals
+        Route::get('/proposals', [FreelancerController::class, 'proposalsIndex'])->name('proposals.index');
+
         // Profile
         Route::get('/profile', [FreelancerController::class, 'profileShow'])->name('profile.show');
         Route::get('/profile/edit', [FreelancerController::class, 'profileEdit'])->name('profile.edit');
@@ -48,14 +51,16 @@ Route::middleware(['auth'])->group(function () {
 
         // Proposals
         Route::get('/jobs/{id}/proposals', [ClientController::class, 'jobProposals'])->name('jobs.proposals');
+        Route::post('/proposals/{id}/accept', [ClientController::class, 'proposalAccept'])->name('proposals.accept');
+        Route::post('/proposals/{id}/reject', [ClientController::class, 'proposalReject'])->name('proposals.reject');
+        Route::post('/jobs/{id}/proposals/reject-all', [ClientController::class, 'proposalRejectAll'])->name('proposals.reject_all');
 
         // Contracts
         Route::get('/contracts', [ClientController::class, 'contractsIndex'])->name('contracts.index');
         Route::get('/contracts/create', [ClientController::class, 'contractCreate'])->name('contracts.create');
         Route::post('/contracts', [ClientController::class, 'contractStore'])->name('contracts.store');
 
-        Route::post('/proposals/{id}/accept', [ClientController::class, 'proposalAccept'])->name('proposals.accept');
-        Route::post('/proposals/{id}/reject', [ClientController::class, 'proposalReject'])->name('proposals.reject');
+        
     });
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

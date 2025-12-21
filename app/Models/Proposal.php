@@ -12,6 +12,7 @@ class Proposal extends Model
         'cover_letter',
         'bid_amount',
         'status',
+        'attachment_path',
     ];
 
     // relationships (job, freelancerProfile)

@@ -71,7 +71,8 @@ class ClientController extends Controller
 
     public function jobCreate()
     {
-        $skills = Skill::orderBy('name')->get();
+        $skills = Skill::where('is_global', true)->orderBy('name')->get();
+        
         return view('client.jobs.create', compact('skills'));
     }
 
@@ -79,12 +80,13 @@ class ClientController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string|min:50',
+            'description' => 'required|string|min:25',
             'budget' => 'required|numeric|min:5',
             'type' => 'required|in:fixed_price,hourly',
             'deadline' => 'required|date|after:today',
-            'skills' => 'required|array|min:1',
-            'skills.*' => 'exists:skills,id'
+            'skills' => 'array', 
+            'skills.*' => 'exists:skills,id',
+            'custom_skills' => 'nullable|string'
         ]);
 
         $user = Auth::user();
@@ -98,7 +100,27 @@ class ClientController extends Controller
             'status' => 'open'
         ]);
 
-        $job->skills()->sync($request->skills);
+        $skillIds = $request->input('skills', []);
+
+        if ($request->filled('custom_skills')) {
+            $customNames = explode(',', $request->input('custom_skills'));
+            
+            foreach ($customNames as $name) {
+                $name = trim($name);
+                if (!empty($name)) {
+                    $skill = Skill::firstOrCreate(
+                        ['name' => ucwords($name)], 
+                        ['is_global' => false]
+                    );
+                    
+                    if (!in_array($skill->id, $skillIds)) {
+                        $skillIds[] = $skill->id;
+                    }
+                }
+            }
+        }
+
+        $job->skills()->sync($skillIds);
 
         return redirect()->route('client.jobs.index')->with('status', 'Job posted successfully! Freelancers can now apply.');
     }
@@ -171,6 +193,23 @@ class ClientController extends Controller
         $proposal->save();
 
         return back()->with('status', 'Proposal rejected.'); 
+    }
+
+    public function proposalRejectAll(int $jobId)
+    {
+        $user = Auth::user();
+        
+        $job = $user->clientProfile->jobs()->findOrFail($jobId);
+
+        $count = $job->proposals()
+            ->where('status', 'sent')
+            ->update(['status' => 'rejected']);
+
+        if ($count > 0) {
+            return back()->with('status', "$count proposals have been rejected.");
+        }
+
+        return back()->withErrors(['msg' => 'No pending proposals to reject.']);
     }
 
     public function contractCreate(Request $request)
