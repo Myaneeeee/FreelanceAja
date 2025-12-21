@@ -50,7 +50,7 @@
                                     <span class="input-group-text">$</span>
                                     <input type="number" name="bid_amount" class="form-control" value="{{ old('bid_amount', $job->budget) }}" step="0.01" required>
                                 </div>
-                                <small class="text-muted">{{ __('client.budget') }}: ${{ number_format($job->budget) }}</small>
+                                <small class="text-muted">{{ __('client.budget') }}: Rp. {{ number_format($job->budget) }}</small>
                             </div>
                         </div>
 
@@ -89,7 +89,7 @@
         <div class="card shadow-sm border-0 bg-light">
             <div class="card-body">
                 <h6 class="fw-bold">{{ __('freelancer.job_budget') }}</h6>
-                <h3 class="fw-bold text-dark mb-0">${{ number_format($job->budget, 2) }}</h3>
+                <h3 class="fw-bold text-dark mb-0">Rp. {{ number_format($job->budget, 2) }}</h3>
                 <small class="text-muted">{{ ucwords(str_replace('_', ' ', $job->type)) }}</small>
             </div>
         </div>

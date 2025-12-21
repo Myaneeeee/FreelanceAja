@@ -7,16 +7,34 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Skill;
 use App\Models\Job;
-use App\Models\Proposal;
-use App\Models\Contract;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $skills = ['Laravel', 'PHP', 'React', 'MySQL', 'Python'];
+        $skills = [
+            // Tech
+            'Laravel', 'PHP', 'React', 'Vue.js', 'MySQL', 'Python', 'Node.js', 
+            'WordPress', 'Shopify', 'AWS', 'DevOps', 'Mobile App Dev',
+            // Design
+            'Graphic Design', 'UI/UX Design', 'Logo Design', 'Photoshop', 'Illustrator', 
+            'Figma', 'Video Editing', 'Animation',
+            // Writing
+            'Content Writing', 'Copywriting', 'SEO Writing', 'Technical Writing', 
+            'Translation', 'Proofreading', 'Ghostwriting',
+            // Marketing
+            'Social Media Marketing', 'SEO', 'Email Marketing', 'Google Ads', 
+            'Facebook Ads', 'Content Strategy',
+            // Admin / Support
+            'Virtual Assistant', 'Data Entry', 'Customer Support', 'Project Management', 
+            'Lead Generation', 'Excel'
+        ];
+
         foreach ($skills as $skill) {
-            Skill::firstOrCreate(['name' => $skill]);
+            Skill::firstOrCreate(
+                ['name' => $skill],
+                ['is_global' => true]
+            );
         }
 
         $clientUser = User::create([
@@ -28,35 +46,31 @@ class DatabaseSeeder extends Seeder
 
         $clientProfile = $clientUser->clientProfile()->create([
             'company_name' => 'Tech Corp',
-            'company_description' => 'A technology company.',
+            'company_description' => 'A global technology innovator.',
             'website_url' => 'https://techcorp.com',
         ]);
+        
+        $clientUser->freelancerProfile()->create(['headline' => 'Client Account']);
 
-        $clientUser->freelancerProfile()->create([
-            'headline' => 'Client Account', 
-            'bio' => 'I hire people.', 
-            'rate_per_hour' => 0
-        ]);
-
-        $job1 = Job::create([
+        Job::create([
             'client_profile_id' => $clientProfile->id,
             'title' => 'Build a Laravel Website',
-            'description' => 'Need a developer to build a corporate website using Laravel.',
+            'description' => 'Need a developer to build a corporate website using Laravel. Must know MySQL and Bootstrap.',
             'budget' => 5000.00,
             'type' => 'fixed_price',
             'status' => 'open',
             'deadline' => now()->addDays(30),
-        ]);
+        ])->skills()->sync(Skill::whereIn('name', ['Laravel', 'MySQL', 'PHP'])->pluck('id'));
         
-        $job2 = Job::create([
+        Job::create([
             'client_profile_id' => $clientProfile->id,
-            'title' => 'Fix API Issues',
-            'description' => 'Debug and fix slow API endpoints.',
-            'budget' => 50.00,
-            'type' => 'hourly',
+            'title' => 'Logo Design for Startup',
+            'description' => 'Looking for a creative logo for a coffee shop. Minimalist style preferred.',
+            'budget' => 500.00,
+            'type' => 'fixed_price',
             'status' => 'open',
-            'deadline' => now()->addDays(14),
-        ]);
+            'deadline' => now()->addDays(7),
+        ])->skills()->sync(Skill::whereIn('name', ['Graphic Design', 'Logo Design', 'Illustrator'])->pluck('id'));
 
         $freelancerUser = User::create([
             'name' => 'Jane Freelancer',
@@ -70,9 +84,7 @@ class DatabaseSeeder extends Seeder
             'bio' => 'Experienced in Laravel and React.',
             'rate_per_hour' => 30.00,
         ]);
-
-        $freelancerUser->clientProfile()->create([
-            'company_name' => 'Jane Freelancer',
-        ]);
+        
+        $freelancerUser->clientProfile()->create(['company_name' => 'Jane Freelancer']);
     }
 }

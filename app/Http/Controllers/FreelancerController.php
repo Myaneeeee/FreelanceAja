@@ -118,21 +118,43 @@ class FreelancerController extends Controller
         return redirect()->route('freelancer.jobs.index')->with('status', 'Proposal submitted successfully!');
     }
 
-    public function skillsEdit()
-    {
-        $profile = Auth::user()->freelancerProfile;
-        $skills = Skill::orderBy('name')->get();
-        $mySkills = $profile->skills->pluck('id')->toArray();
-
-        return view('freelancer.skills', compact('skills', 'mySkills'));
-    }
-
     public function skillsUpdate(Request $request)
     {
         $profile = Auth::user()->freelancerProfile;
-        $profile->skills()->sync($request->input('skills', []));
+        
+        $selectedSkillIds = $request->input('skills', []);
+
+        if ($request->filled('custom_skills')) {
+            $customSkillsNames = explode(',', $request->input('custom_skills'));
+            
+            foreach ($customSkillsNames as $name) {
+                $name = trim($name);
+                if (!empty($name)) {
+                    $skill = Skill::firstOrCreate(
+                        ['name' => ucwords($name)] // Capitalize
+                    );
+                    
+                    if (!in_array($skill->id, $selectedSkillIds)) {
+                        $selectedSkillIds[] = $skill->id;
+                    }
+                }
+            }
+        }
+
+        $profile->skills()->sync($selectedSkillIds);
 
         return redirect()->route('freelancer.home')->with('status', 'Skills updated successfully!');
+    }
+
+    public function skillsEdit()
+    {
+        $profile = Auth::user()->freelancerProfile;
+
+        $skills = Skill::orderBy('name')->get();
+        
+        $mySkills = $profile->skills->pluck('id')->toArray();
+
+        return view('freelancer.skills', compact('skills', 'mySkills'));
     }
 
     public function contractsIndex()

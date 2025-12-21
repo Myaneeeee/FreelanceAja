@@ -17,7 +17,7 @@ return [
     'description' => 'Description',
     'description_placeholder' => 'Describe the project details, requirements, and deliverables...',
     'be_detailed' => 'Be detailed. Good descriptions attract better talent.',
-    'budget_label' => 'Budget ($)',
+    'budget_label' => 'Budget (Rp)',
     'payment_type' => 'Payment Type',
     'fixed_price' => 'Fixed Price',
     'hourly' => 'Hourly',
@@ -58,7 +58,6 @@ return [
     'freelancer' => 'Freelancer',
     'job' => 'Job',
     'client' => 'Client',
-    'finalize_contract' => 'Finalize Contract',
     'contract_active' => 'Contract Active',
     'accept_create_contract' => 'Accept & Create Contract',
 ];

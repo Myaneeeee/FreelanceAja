@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Skill extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'is_global'];
 
     // relationships (freelancers many-to-many, jobs many-to-many)
     public function freelancerProfiles()

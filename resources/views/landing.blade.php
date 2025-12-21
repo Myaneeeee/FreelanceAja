@@ -92,7 +92,7 @@
                     <h5 class="card-title fw-bold">{{ $job->title }}</h5>
                     <p class="card-text text-muted text-truncate">{{ Str::limit($job->description, 80) }}</p>
                     <div class="d-flex justify-content-between align-items-center mt-3">
-                        <span class="fw-bold">${{ number_format($job->budget, 2) }}</span>
+                        <span class="fw-bold">Rp. {{ number_format($job->budget, 2) }}</span>
                         <a href="#" class="btn btn-sm btn-outline-primary">{{ __('freelancer.submit') }}</a>
                     </div>
                 </div>

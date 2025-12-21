@@ -3,69 +3,105 @@
 @section('title', 'Finalize Contract')
 
 @section('content')
+
+{{-- Case 1: No Proposals to process --}}
+@if($acceptedProposals->isEmpty())
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <div class="mb-4">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="bi bi-file-earmark-text text-muted h1 mb-0"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold">No Accepted Proposals Found</h3>
+                <p class="text-muted mb-4">
+                    You need to <strong>accept a proposal</strong> from a freelancer before you can create a contract. 
+                    Review your open jobs and candidates first.
+                </p>
+                <a href="{{ route('client.jobs.index') }}" class="btn btn-primary btn-lg">
+                    Go to My Jobs
+                </a>
+            </div>
+        </div>
+    </div>
+
+{{-- Case 2: We have data, show the form --}}
+@else
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-success text-white py-3">
-                <h4 class="fw-bold mb-0">{{ __('client.create_contract') }}</h4>
-                <p class="mb-0 opacity-75">{{ __('client.review_details') }}</p>
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ route('client.home') }}" class="btn btn-outline-light text-muted border-0 me-2"><i class="bi bi-arrow-left"></i></a>
+            <div>
+                <h3 class="fw-bold mb-0">{{ __('client.create_contract') }}</h3>
+                <p class="text-muted mb-0 small">Step 2 of 2: Finalize Terms</p>
             </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
             <div class="card-body p-4">
                 <form action="{{ route('client.contracts.store') }}" method="POST">
                     @csrf
                     
-                    {{-- Proposal Selection (Auto-selected if ID passed) --}}
+                    {{-- 1. Proposal Selector --}}
                     <div class="mb-4">
-                        <label class="form-label fw-bold">{{ __('client.select_accepted_proposal') }}</label>
-                        <select name="proposal_id" class="form-select bg-light" id="proposalSelect" onchange="updateFormDetails(this)">
+                        <label class="form-label fw-bold text-uppercase small text-secondary">Select Freelancer & Job</label>
+                        <select name="proposal_id" class="form-select form-select-lg bg-light border-0" id="proposalSelect" onchange="updateFormDetails(this)">
                             @foreach($acceptedProposals as $p)
                                 <option value="{{ $p->id }}" 
                                     data-price="{{ $p->bid_amount }}" 
                                     data-freelancer="{{ $p->freelancerProfile->user->name }}"
+                                    data-headline="{{ $p->freelancerProfile->headline }}"
+                                    data-initial="{{ substr($p->freelancerProfile->user->name, 0, 1) }}"
                                     data-job="{{ $p->job->title }}"
                                     {{ $selectedProposalId == $p->id ? 'selected' : '' }}>
-                                    {{ $p->job->title }} - {{ $p->freelancerProfile->user->name }} (${{ $p->bid_amount }})
+                                    {{ $p->freelancerProfile->user->name }} — {{ $p->job->title }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
-                    {{-- Read-only Summary --}}
-                    <div class="alert alert-light border mb-4">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <small class="text-muted d-block">{{ __('common.freelancer') }}</small>
-                                <strong id="summaryFreelancer">-</strong>
+                    {{-- 2. Visual Summary Card (Dynamic) --}}
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="avatar bg-primary text-white rounded-circle text-center me-3 d-flex align-items-center justify-content-center fw-bold fs-4" 
+                                 style="width: 56px; height: 56px;" id="summaryAvatar">
+                                -
                             </div>
-                            <div class="col-md-6">
-                                <small class="text-muted d-block">{{ __('client.job_title') }}</small>
-                                <strong id="summaryJob">-</strong>
+                            <div>
+                                <h5 class="fw-bold mb-0" id="summaryFreelancer">-</h5>
+                                <div class="text-muted small" id="summaryHeadline">-</div>
+                                <div class="badge bg-white text-dark border mt-1" id="summaryJob">-</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row mb-3">
+                    {{-- 3. Terms --}}
+                    <div class="row g-3 mb-4">
                         <div class="col-md-12">
-                            <label class="form-label fw-bold">{{ __('client.agreed_final_price') }}</label>
-                            <input type="number" name="final_price" id="finalPrice" class="form-control form-control-lg fw-bold" step="0.01" required>
-                            <div class="form-text">{{ __('client.adjust_final_amount') }}</div>
+                            <label class="form-label fw-bold text-uppercase small text-secondary">{{ __('client.agreed_final_price') }}</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-white text-muted border-end-0">Rp.</span>
+                                <input type="number" name="final_price" id="finalPrice" class="form-control border-start-0 fw-bold text-dark" step="0.01" required>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="row mb-4">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">{{ __('client.start_date') }}</label>
+                            <label class="form-label fw-bold text-uppercase small text-secondary">{{ __('client.start_date') }}</label>
                             <input type="date" name="start_date" class="form-control" value="{{ date('Y-m-d') }}" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">{{ __('client.end_date') }} ({{ __('common.optional') }})</label>
+                            <label class="form-label fw-bold text-uppercase small text-secondary">{{ __('client.end_date') }} (Optional)</label>
                             <input type="date" name="end_date" class="form-control">
                         </div>
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-success btn-lg">{{ __('client.start_contract') }}</button>
-                        <a href="{{ route('client.home') }}" class="btn btn-link text-muted">{{ __('common.cancel') }}</a>
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ route('client.jobs.index') }}" class="text-decoration-none text-muted">Cancel</a>
+                        <button type="submit" class="btn btn-success btn-lg px-5">
+                            {{ __('client.start_contract') }}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -74,20 +110,24 @@
 </div>
 
 <script>
-    // Simple script to update the UI based on selected dropdown
     function updateFormDetails(select) {
         const option = select.options[select.selectedIndex];
+        
         document.getElementById('finalPrice').value = option.dataset.price;
+        
         document.getElementById('summaryFreelancer').innerText = option.dataset.freelancer;
-        document.getElementById('summaryJob').innerText = option.dataset.job;
+        document.getElementById('summaryHeadline').innerText = option.dataset.headline || 'Freelancer';
+        document.getElementById('summaryJob').innerText = "Job: " + option.dataset.job;
+        document.getElementById('summaryAvatar').innerText = option.dataset.initial;
     }
 
-    // Run on load
     document.addEventListener('DOMContentLoaded', function() {
         const select = document.getElementById('proposalSelect');
-        if(select.options.length > 0) {
+        if(select && select.options.length > 0) {
             updateFormDetails(select);
         }
     });
 </script>
+@endif
+
 @endsection

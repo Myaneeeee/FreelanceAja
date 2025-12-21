@@ -19,7 +19,6 @@ class ClientController extends Controller
         // Stats for Dashboard
         $activeJobsCount = $client->jobs()->where('status', 'in_progress')->count();
         $openJobsCount = $client->jobs()->where('status', 'open')->count();
-        $totalSpent = $client->contracts()->where('status', 'completed')->sum('final_price');
 
         // Recent Proposals (pending review)
         $recentProposals = Proposal::whereHas('job', function($q) use ($client) {
@@ -38,7 +37,36 @@ class ClientController extends Controller
             ->latest()
             ->get();
 
-        return view('client.home', compact('client', 'activeJobsCount', 'openJobsCount', 'totalSpent', 'recentProposals', 'activeContracts'));
+        return view('client.home', compact('client', 'activeJobsCount', 'openJobsCount', 'recentProposals', 'activeContracts'));
+    }
+
+    public function contractsIndex(Request $request)
+    {
+        $user = Auth::user();
+        $query = $user->clientProfile->contracts()->with(['job', 'freelancerProfile.user']);
+
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('q') && $request->q != '') {
+            $search = $request->q;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('job', function($j) use ($search) {
+                    $j->where('title', 'like', "%{$search}%");
+                })
+                ->orWhereHas('freelancerProfile.user', function($u) use ($search) {
+                    $u->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $contracts = $query->latest()->paginate(10)->withQueryString();
+        
+        $activeCount = $user->clientProfile->contracts()->where('status', 'active')->count();
+        $allCount = $user->clientProfile->contracts()->count();
+
+        return view('client.contracts.index', compact('contracts', 'activeCount', 'allCount'));
     }
 
     public function jobCreate()
@@ -75,17 +103,26 @@ class ClientController extends Controller
         return redirect()->route('client.jobs.index')->with('status', 'Job posted successfully! Freelancers can now apply.');
     }
 
-    public function jobsIndex()
+    public function jobsIndex(Request $request)
     {
         $user = Auth::user();
         
-        // Get jobs with proposal counts
-        $jobs = $user->clientProfile->jobs()
-            ->withCount(['proposals', 'proposals as new_proposals_count' => function($query) {
-                $query->where('status', 'sent');
+        $query = $user->clientProfile->jobs();
+
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('q') && $request->q != '') {
+            $query->where('title', 'like', '%' . $request->q . '%');
+        }
+
+        $jobs = $query->withCount(['proposals', 'proposals as new_proposals_count' => function($q) {
+                $q->where('status', 'sent');
             }])
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
         
         return view('client.jobs.index', compact('jobs'));
     }
@@ -125,7 +162,7 @@ class ClientController extends Controller
     public function proposalReject(int $id)
     {
         $proposal = Proposal::findOrFail($id);
-        
+
         if ($proposal->job->client_profile_id !== Auth::user()->clientProfile->id) {
             abort(403);
         }
@@ -133,16 +170,14 @@ class ClientController extends Controller
         $proposal->status = 'rejected';
         $proposal->save();
 
-        return back()->with('status', "Proposal rejected.");
+        return back()->with('status', 'Proposal rejected.'); 
     }
 
     public function contractCreate(Request $request)
     {
-        // If a specific proposal is passed (via Accept flow), autofill it
         $selectedProposalId = $request->get('proposal_id');
         $user = Auth::user();
 
-        // Get all accepted proposals that don't have a contract yet
         $acceptedProposals = Proposal::whereHas('job', function($q) use ($user) {
                 $q->where('client_profile_id', $user->clientProfile->id);
             })
@@ -150,11 +185,7 @@ class ClientController extends Controller
             ->whereDoesntHave('contract')
             ->with(['job', 'freelancerProfile.user'])
             ->get();
-
-        if($acceptedProposals->isEmpty()) {
-            return redirect()->route('client.jobs.index')->withErrors(['msg' => 'You have no accepted proposals waiting for contracts.']);
-        }
-
+        
         return view('client.contracts.create', compact('acceptedProposals', 'selectedProposalId'));
     }
 
@@ -186,7 +217,6 @@ class ClientController extends Controller
             'status' => 'active'
         ]);
 
-        // Update job status to in_progress
         $proposal->job->update(['status' => 'in_progress']);
 
         return redirect()->route('client.home')->with('status', 'Contract started successfully! Work can begin.');

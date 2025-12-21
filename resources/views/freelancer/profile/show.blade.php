@@ -19,7 +19,7 @@
                 <div class="d-flex justify-content-between align-items-start mb-4">
                     <div>
                         <h4 class="fw-bold text-primary">{{ $profile->headline ?? __('freelancer.no_headline') }}</h4>
-                        <h5 class="text-muted">${{ number_format($profile->rate_per_hour, 2) }} / hr</h5>
+                        <h5 class="text-muted">Rp. {{ number_format($profile->rate_per_hour, 2) }} / hr</h5>
                     </div>
                     <a href="{{ route('freelancer.profile.edit') }}" class="btn btn-outline-primary">
                         {{ __('freelancer.edit_profile') }}

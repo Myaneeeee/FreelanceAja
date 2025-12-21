@@ -8,48 +8,56 @@
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white py-3">
                 <h4 class="fw-bold mb-0">{{ __('freelancer.manage_skills') }}</h4>
-                <p class="text-muted small mb-0">{{ __('freelancer.select_skills') }}</p>
+                <p class="text-muted small mb-0">Select skills that best describe your expertise.</p>
             </div>
             <div class="card-body p-4">
                 <form action="{{ route('freelancer.skills.update') }}" method="POST">
                     @csrf
                     
-                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mb-4">
+                    <h6 class="fw-bold mb-3 text-secondary text-uppercase small">Select Popular Skills</h6>
+                    <div class="d-flex flex-wrap gap-2 mb-4">
                         @foreach($skills as $skill)
-                            <div class="col">
-                                <div class="form-check position-relative p-3 border rounded bg-white shadow-sm h-100 d-flex align-items-center user-select-none hover-shadow transition">
-                                    <input class="form-check-input shrink-0 me-3" type="checkbox" 
-                                           name="skills[]" 
-                                           value="{{ $skill->id }}" 
-                                           id="skill_{{ $skill->id }}"
-                                           style="width: 1.3em; height: 1.3em; cursor: pointer;"
-                                           {{ in_array($skill->id, $mySkills) ? 'checked' : '' }}>
-                                    
-                                    <label class="form-check-label fw-bold stretched-link w-100" for="skill_{{ $skill->id }}" style="cursor: pointer;">
-                                        {{ $skill->name }}
-                                    </label>
-                                </div>
-                            </div>
+                            <input type="checkbox" class="btn-check" 
+                                   name="skills[]" 
+                                   id="skill_{{ $skill->id }}" 
+                                   value="{{ $skill->id }}" 
+                                   autocomplete="off"
+                                   {{ in_array($skill->id, $mySkills) ? 'checked' : '' }}>
+                            
+                            <label class="btn btn-outline-primary rounded-pill btn-sm px-3 py-2 fw-semibold" for="skill_{{ $skill->id }}">
+                                {{ $skill->name }}
+                                @if(in_array($skill->id, $mySkills))
+                                    <i class="bi bi-check-lg ms-1"></i>
+                                @else
+                                    <i class="bi bi-plus-lg ms-1"></i>
+                                @endif
+                            </label>
                         @endforeach
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">{{ __('freelancer.update_skills') }}</button>
-                        <a href="{{ route('freelancer.home') }}" class="btn btn-link text-decoration-none text-muted">{{ __('freelancer.back_to_dashboard') }}</a>
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <div class="mb-4">
+                        <label for="custom_skills" class="form-label fw-bold">
+                            <i class="bi bi-stars text-warning me-1"></i> Add Custom Skills
+                        </label>
+                        <p class="text-muted small mb-2">Can't find your skill above? Add your own, separated by commas.</p>
+                        
+                        <input type="text" 
+                               name="custom_skills" 
+                               id="custom_skills" 
+                               class="form-control form-control-lg" 
+                               placeholder="e.g. Underwater Basket Weaving, Advanced Excel, Fortran">
+                        <div class="form-text">We will create these skills and add them to your profile instantly.</div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ route('freelancer.home') }}" class="btn btn-light me-md-2">{{ __('common.cancel') }}</a>
+                        <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm">{{ __('freelancer.update_skills') }}</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .hover-shadow:hover {
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
-        border-color: #0d6efd !important;
-    }
-    .transition {
-        transition: all 0.2s ease-in-out;
-    }
-</style>
 @endsection
