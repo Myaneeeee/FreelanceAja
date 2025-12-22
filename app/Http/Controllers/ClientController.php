@@ -21,9 +21,9 @@ class ClientController extends Controller
         $openJobsCount = $client->jobs()->where('status', 'open')->count();
 
         // Recent Proposals (pending review)
-        $recentProposals = Proposal::whereHas('job', function($q) use ($client) {
-                $q->where('client_profile_id', $client->id);
-            })
+        $recentProposals = Proposal::whereHas('job', function ($q) use ($client) {
+            $q->where('client_profile_id', $client->id);
+        })
             ->where('status', 'sent')
             ->with(['job', 'freelancerProfile.user'])
             ->latest()
@@ -51,18 +51,18 @@ class ClientController extends Controller
 
         if ($request->has('q') && $request->q != '') {
             $search = $request->q;
-            $query->where(function($q) use ($search) {
-                $q->whereHas('job', function($j) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('job', function ($j) use ($search) {
                     $j->where('title', 'like', "%{$search}%");
                 })
-                ->orWhereHas('freelancerProfile.user', function($u) use ($search) {
-                    $u->where('name', 'like', "%{$search}%");
-                });
+                    ->orWhereHas('freelancerProfile.user', function ($u) use ($search) {
+                        $u->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
         $contracts = $query->latest()->paginate(10)->withQueryString();
-        
+
         $activeCount = $user->clientProfile->contracts()->where('status', 'active')->count();
         $allCount = $user->clientProfile->contracts()->count();
 
@@ -72,7 +72,7 @@ class ClientController extends Controller
     public function jobCreate()
     {
         $skills = Skill::where('is_global', true)->orderBy('name')->get();
-        
+
         return view('client.jobs.create', compact('skills'));
     }
 
@@ -84,7 +84,7 @@ class ClientController extends Controller
             'budget' => 'required|numeric|min:5',
             'type' => 'required|in:fixed_price,hourly',
             'deadline' => 'required|date|after:today',
-            'skills' => 'array', 
+            'skills' => 'array',
             'skills.*' => 'exists:skills,id',
             'custom_skills' => 'nullable|string'
         ]);
@@ -104,15 +104,15 @@ class ClientController extends Controller
 
         if ($request->filled('custom_skills')) {
             $customNames = explode(',', $request->input('custom_skills'));
-            
+
             foreach ($customNames as $name) {
                 $name = trim($name);
                 if (!empty($name)) {
                     $skill = Skill::firstOrCreate(
-                        ['name' => ucwords($name)], 
+                        ['name' => ucwords($name)],
                         ['is_global' => false]
                     );
-                    
+
                     if (!in_array($skill->id, $skillIds)) {
                         $skillIds[] = $skill->id;
                     }
@@ -122,13 +122,13 @@ class ClientController extends Controller
 
         $job->skills()->sync($skillIds);
 
-        return redirect()->route('client.jobs.index')->with('status', 'Job posted successfully! Freelancers can now apply.');
+        return redirect()->route('client.jobs.index')->with('status', __('client.job_posted_success'));
     }
 
     public function jobsIndex(Request $request)
     {
         $user = Auth::user();
-        
+
         $query = $user->clientProfile->jobs();
 
         if ($request->has('status') && $request->status != '') {
@@ -139,23 +139,23 @@ class ClientController extends Controller
             $query->where('title', 'like', '%' . $request->q . '%');
         }
 
-        $jobs = $query->withCount(['proposals', 'proposals as new_proposals_count' => function($q) {
-                $q->where('status', 'sent');
-            }])
+        $jobs = $query->withCount(['proposals', 'proposals as new_proposals_count' => function ($q) {
+            $q->where('status', 'sent');
+        }])
             ->latest()
             ->paginate(10)
             ->withQueryString();
-        
+
         return view('client.jobs.index', compact('jobs'));
     }
 
     public function jobProposals(int $id)
     {
         $user = Auth::user();
-        
+
         // Ensure job belongs to client
         $job = $user->clientProfile->jobs()
-            ->with(['proposals.freelancerProfile.user', 'proposals' => function($q) {
+            ->with(['proposals.freelancerProfile.user', 'proposals' => function ($q) {
                 // Sort proposals: Accepted first, then new ones
                 $q->orderByRaw("FIELD(status, 'accepted', 'sent', 'rejected')");
             }])
@@ -167,7 +167,7 @@ class ClientController extends Controller
     public function proposalAccept(int $id)
     {
         $proposal = Proposal::findOrFail($id);
-        
+
         // Security check: Ensure this proposal belongs to a job owned by the auth user
         if ($proposal->job->client_profile_id !== Auth::user()->clientProfile->id) {
             abort(403);
@@ -178,7 +178,7 @@ class ClientController extends Controller
 
         // Redirect to contract creation immediately
         return redirect()->route('client.contracts.create', ['proposal_id' => $proposal->id])
-            ->with('status', "Proposal accepted! Please review and finalize the contract details.");
+            ->with('status', __('client.proposal_accepted_success'));
     }
 
     public function proposalReject(int $id)
@@ -192,13 +192,13 @@ class ClientController extends Controller
         $proposal->status = 'rejected';
         $proposal->save();
 
-        return back()->with('status', 'Proposal rejected.'); 
+        return back()->with('status', __('client.proposal_rejected'));
     }
 
     public function proposalRejectAll(int $jobId)
     {
         $user = Auth::user();
-        
+
         $job = $user->clientProfile->jobs()->findOrFail($jobId);
 
         $count = $job->proposals()
@@ -206,10 +206,10 @@ class ClientController extends Controller
             ->update(['status' => 'rejected']);
 
         if ($count > 0) {
-            return back()->with('status', "$count proposals have been rejected.");
+            return back()->with('status', __('client.proposals_rejected', ['count' => $count]));
         }
 
-        return back()->withErrors(['msg' => 'No pending proposals to reject.']);
+        return back()->withErrors(['msg' => __('client.no_pending_proposals')]);
     }
 
     public function contractCreate(Request $request)
@@ -217,14 +217,14 @@ class ClientController extends Controller
         $selectedProposalId = $request->get('proposal_id');
         $user = Auth::user();
 
-        $acceptedProposals = Proposal::whereHas('job', function($q) use ($user) {
-                $q->where('client_profile_id', $user->clientProfile->id);
-            })
+        $acceptedProposals = Proposal::whereHas('job', function ($q) use ($user) {
+            $q->where('client_profile_id', $user->clientProfile->id);
+        })
             ->where('status', 'accepted')
             ->whereDoesntHave('contract')
             ->with(['job', 'freelancerProfile.user'])
             ->get();
-        
+
         return view('client.contracts.create', compact('acceptedProposals', 'selectedProposalId'));
     }
 
@@ -258,7 +258,7 @@ class ClientController extends Controller
 
         $proposal->job->update(['status' => 'in_progress']);
 
-        return redirect()->route('client.home')->with('status', 'Contract started successfully! Work can begin.');
+        return redirect()->route('client.home')->with('status', __('client.contract_started_success'));
     }
 
     public function profileShow()
@@ -291,6 +291,6 @@ class ClientController extends Controller
             'company_description' => $request->company_description,
         ]);
 
-        return redirect()->route('client.profile.show')->with('status', 'Profile updated successfully!');
+        return redirect()->route('client.profile.show')->with('status', __('client.profile_updated_success'));
     }
 }

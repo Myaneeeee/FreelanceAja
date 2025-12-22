@@ -23,5 +23,6 @@ return [
     'contact_email_placeholder' => 'For work inquiries',
     'contact_phone' => 'Phone Number',
     'contact_phone_placeholder' => '+62...',
-    'visible_to_contracts' => 'Visible to contracts.'
+    'visible_to_contracts' => 'Visible to contracts.',
+    'failed' => 'The provided credentials do not match our records.'
 ];

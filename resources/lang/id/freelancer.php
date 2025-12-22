@@ -126,8 +126,10 @@ return [
     'attach_file_optional' => 'Lampirkan Berkas (Opsional)',
     'upload_pdf_note' => 'Unggah file PDF (misalnya CV atau proposal detail). Ukuran maksimal 2MB.',
     'proposal_submitted_success' => 'Proposal berhasil dikirim!',
+    'skills_updated_success' => 'Keahlian berhasil diperbarui!',
+    'profile_updated_success' => 'Profil berhasil diperbarui!',
     'cover_letter_min' => 'Field surat pengantar harus minimal 25 karakter.',
     'new_freelancer' => 'Freelancer Baru',
-    'zero_rate' => 'Rp. 0,00 / jam',
+    'zero_rate' => '/ jam',
     'account_created_welcome' => 'Akun dibuat! Selamat datang.',
 ];

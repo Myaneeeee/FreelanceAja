@@ -126,8 +126,10 @@ return [
     'attach_file_optional' => 'Attach File (Optional)',
     'upload_pdf_note' => 'Upload a PDF file (e.g., resume or detailed proposal). Max size 2MB.',
     'proposal_submitted_success' => 'Proposal submitted successfully!',
+    'skills_updated_success' => 'Skills updated successfully!',
     'cover_letter_min' => 'The cover letter field must be at least 25 characters.',
     'new_freelancer' => 'New Freelancer',
-    'zero_rate' => 'Rp. 0.00 / hr',
+    'zero_rate' => '/ hr',
     'account_created_welcome' => 'Account created! Welcome.',
+    'profile_updated_success' => 'Profile updated successfully!',
 ];

@@ -14,12 +14,12 @@
                 <h2 class="fw-bold">{{ $profile->user->name }}</h2>
                 <p class="mb-0 opacity-75">{{ $profile->user->email }}</p>
             </div>
-            
+
             <div class="card-body p-5">
                 <div class="d-flex justify-content-between align-items-start mb-4">
                     <div>
                         <h4 class="fw-bold text-primary">{{ $profile->headline ?? __('freelancer.no_headline') }}</h4>
-                        <h5 class="text-muted">Rp. {{ number_format($profile->rate_per_hour, 2) }} / hr</h5>
+                        <h5 class="text-muted">Rp. {{ number_format($profile->rate_per_hour, 2) }} {{  __('freelancer.zero_rate') }}</h5>
                     </div>
                     <a href="{{ route('freelancer.profile.edit') }}" class="btn btn-outline-primary">
                         {{ __('freelancer.edit_profile') }}

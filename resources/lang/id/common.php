@@ -63,4 +63,9 @@ return [
     'freelancer_is_working' => 'Freelancer sedang mengerjakan...',
     'no_phone_provided' => 'Tidak ada nomor telepon',
     'open' => 'Terbuka',
+    'work_submitted_success' => 'Pekerjaan dikirim untuk direview!',
+    'work_approved_success' => 'Pekerjaan disetujui! Silakan lanjutkan ke pembayaran.',
+    'revision_requested' => 'Revisi diminta. Status dikembalikan ke Sedang Berlangsung.',
+    'payment_marked_sent' => 'Pembayaran ditandai telah dikirim. Menunggu konfirmasi freelancer.',
+    'payment_confirmed_success' => 'Pembayaran dikonfirmasi! Kontrak sekarang ditutup.',
 ];

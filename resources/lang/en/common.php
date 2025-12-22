@@ -63,4 +63,9 @@ return [
     'freelancer_is_working' => 'Freelancer is working...',
     'no_phone_provided' => 'No phone provided',
     'open' => 'Open',
+    'work_submitted_success' => 'Work submitted for review!',
+    'work_approved_success' => 'Work approved! Please proceed to payment.',
+    'revision_requested' => 'Revision requested. Status set back to In Progress.',
+    'payment_marked_sent' => 'Payment marked as sent. Waiting for freelancer confirmation.',
+    'payment_confirmed_success' => 'Payment confirmed! Contract is now closed.',
 ];

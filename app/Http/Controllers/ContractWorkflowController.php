@@ -23,72 +23,72 @@ class ContractWorkflowController extends Controller
 
         return view('contracts.show', compact('contract'));
     }
-    
+
     public function submitWork(Request $request, $contractId)
     {
         $contract = Contract::with('job')->findOrFail($contractId);
-        
+
         // Security: Only the freelancer of this contract can submit
-        if(Auth::user()->freelancerProfile->id !== $contract->freelancer_profile_id) {
+        if (Auth::user()->freelancerProfile->id !== $contract->freelancer_profile_id) {
             abort(403);
         }
 
         $contract->job->update(['status' => 'waiting_for_review']);
 
-        return back()->with('status', 'Work submitted for review!');
+        return back()->with('status', __('common.work_submitted_success'));
     }
 
     // 2. Client Approves Work
     public function approveWork(Request $request, $contractId)
     {
         $contract = Contract::with('job')->findOrFail($contractId);
-        
+
         // Security: Only client
-        if(Auth::user()->clientProfile->id !== $contract->client_profile_id) {
+        if (Auth::user()->clientProfile->id !== $contract->client_profile_id) {
             abort(403);
         }
 
         // Status moves to Waiting for Payment
         $contract->job->update(['status' => 'waiting_for_payment']);
 
-        return back()->with('status', 'Work approved! Please proceed to payment.');
+        return back()->with('status', __('common.work_approved_success'));
     }
 
     // 3. Client Requests Revision
     public function rejectWork(Request $request, $contractId)
     {
         $contract = Contract::with('job')->findOrFail($contractId);
-        
-        if(Auth::user()->clientProfile->id !== $contract->client_profile_id) {
+
+        if (Auth::user()->clientProfile->id !== $contract->client_profile_id) {
             abort(403);
         }
 
         // Status goes back to In Progress
         $contract->job->update(['status' => 'in_progress']);
 
-        return back()->with('status', 'Revision requested. Status set back to In Progress.');
+        return back()->with('status', __('common.revision_requested'));
     }
 
     // 4. Client Marks Payment Sent
     public function markPaid(Request $request, $contractId)
     {
         $contract = Contract::with('job')->findOrFail($contractId);
-        
-        if(Auth::user()->clientProfile->id !== $contract->client_profile_id) {
+
+        if (Auth::user()->clientProfile->id !== $contract->client_profile_id) {
             abort(403);
         }
 
         $contract->job->update(['status' => 'payment_verification']);
 
-        return back()->with('status', 'Payment marked as sent. Waiting for freelancer confirmation.');
+        return back()->with('status', __('common.payment_marked_sent'));
     }
 
     // 5. Freelancer Confirms Payment (FINISH)
     public function confirmPayment(Request $request, $contractId)
     {
         $contract = Contract::with('job')->findOrFail($contractId);
-        
-        if(Auth::user()->freelancerProfile->id !== $contract->freelancer_profile_id) {
+
+        if (Auth::user()->freelancerProfile->id !== $contract->freelancer_profile_id) {
             abort(403);
         }
 
@@ -96,6 +96,6 @@ class ContractWorkflowController extends Controller
         $contract->job->update(['status' => 'completed']);
         $contract->update(['status' => 'completed']);
 
-        return back()->with('status', 'Payment confirmed! Contract is now closed.');
+        return back()->with('status', __('common.payment_confirmed_success'));
     }
 }

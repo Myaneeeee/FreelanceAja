@@ -115,6 +115,11 @@ return [
     'attachment' => 'Lampiran:',
     'view_pdf_proposal' => 'Lihat PDF Proposal',
     'contract_started_success' => 'Kontrak berhasil dimulai! Pekerjaan dapat dimulai.',
+    'proposal_accepted_success' => 'Proposal diterima! Silakan tinjau dan finalisasi detail kontrak.',
+    'proposal_rejected' => 'Proposal ditolak.',
+    'proposals_rejected' => ':count proposal telah ditolak.',
+    'profile_updated_success' => 'Profil berhasil diperbarui!',
+    'no_pending_proposals' => 'Tidak ada proposal yang menunggu untuk ditolak.',
     'select_freelancer_and_job' => 'Pilih Freelancer & Pekerjaan',
     'finalize_terms_step' => 'Langkah 2 dari 2: Finalisasi Syarat',
     'no_accepted_proposals_found' => 'Tidak ada proposal yang diterima',
@@ -140,4 +145,5 @@ return [
     'company_name' => 'Nama Perusahaan',
     'about_company' => 'Tentang Perusahaan',
     'contact_details_shared' => 'Detail Kontak (Dibagikan dengan freelancer setelah mempekerjakan)',
+    'bid' => 'Tawaran',
 ];

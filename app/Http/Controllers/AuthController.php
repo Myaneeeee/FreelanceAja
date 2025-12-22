@@ -30,7 +30,7 @@ class AuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => __('auth.failed'),
         ])->onlyInput('email');
     }
 
@@ -80,7 +80,7 @@ class AuthController extends Controller
 
         session(['active_role' => $request->role]);
 
-        return redirect()->route($request->role . '.home')->with('status', 'Account created! Welcome.');
+        return redirect()->route($request->role . '.home')->with('status', __('freelancer.account_created_welcome'));
     }
 
     public function logout(Request $request)

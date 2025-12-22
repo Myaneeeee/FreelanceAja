@@ -147,7 +147,7 @@
                                     <p class="small text-muted mb-0">{{ $proposal->freelancerProfile->user->name }}</p>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <span class="badge bg-light text-dark border">Bid: Rp.
+                                    <span class="badge bg-light text-dark border">{{ __('client.bid') }}: Rp.
                                         {{ number_format($proposal->bid_amount) }}</span>
                                     <a href="{{ route('client.jobs.proposals', $proposal->job_id) }}"
                                         class="btn btn-sm btn-outline-primary rounded-pill px-3">

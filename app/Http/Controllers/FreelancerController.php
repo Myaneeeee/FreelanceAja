@@ -25,10 +25,10 @@ class FreelancerController extends Controller
 
         // Get recent job postings that match skills
         $mySkillIds = $profile->skills->pluck('id');
-        
+
         $recommendedJobs = Job::with(['skills', 'clientProfile'])
             ->where('status', 'open')
-            ->whereHas('skills', function($query) use ($mySkillIds) {
+            ->whereHas('skills', function ($query) use ($mySkillIds) {
                 $query->whereIn('skills.id', $mySkillIds); // Specify table name to avoid ambiguity
             })
             ->latest()
@@ -48,7 +48,7 @@ class FreelancerController extends Controller
 
         // Search
         if ($q = $request->input('q')) {
-            $query->where(function($sub) use ($q) {
+            $query->where(function ($sub) use ($q) {
                 $sub->where('title', 'like', "%{$q}%")
                     ->orWhere('description', 'like', "%{$q}%");
             });
@@ -60,7 +60,7 @@ class FreelancerController extends Controller
         }
 
         if ($skillId = $request->input('skill_id')) {
-            $query->whereHas('skills', function($q) use ($skillId) {
+            $query->whereHas('skills', function ($q) use ($skillId) {
                 $q->where('skills.id', $skillId);
             });
         }
@@ -104,11 +104,11 @@ class FreelancerController extends Controller
 
         if ($request->has('q') && $request->q != '') {
             $search = $request->q;
-            $query->whereHas('job', function($q) use ($search) {
+            $query->whereHas('job', function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhereHas('clientProfile.user', function($u) use ($search) {
-                      $u->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('clientProfile.user', function ($u) use ($search) {
+                        $u->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -122,14 +122,14 @@ class FreelancerController extends Controller
         $request->validate([
             'cover_letter' => 'required|string|min:25',
             'bid_amount' => 'required|numeric|min:1',
-            'attachment' => 'nullable|file|mimes:pdf|max:2048', 
+            'attachment' => 'nullable|file|mimes:pdf|max:2048',
         ]);
 
         $job = Job::findOrFail($id);
         $profile = Auth::user()->freelancerProfile;
 
-        if(Proposal::where('job_id', $job->id)->where('freelancer_profile_id', $profile->id)->exists()){
-            return back()->withErrors(['msg' => 'You have already applied to this job.']);
+        if (Proposal::where('job_id', $job->id)->where('freelancer_profile_id', $profile->id)->exists()) {
+            return back()->withErrors(['msg' => __('freelancer.already_applied')]);
         }
 
         $path = null;
@@ -146,7 +146,7 @@ class FreelancerController extends Controller
             'attachment_path' => $path,
         ]);
 
-        return redirect()->route('freelancer.jobs.index')->with('status', 'Proposal submitted successfully!');
+        return redirect()->route('freelancer.jobs.index')->with('status', __('freelancer.proposal_submitted_success'));
     }
 
     public function skillsUpdate(Request $request)
@@ -157,15 +157,15 @@ class FreelancerController extends Controller
 
         if ($request->filled('custom_skills')) {
             $customSkillsNames = explode(',', $request->input('custom_skills'));
-            
+
             foreach ($customSkillsNames as $name) {
                 $name = trim($name);
                 if (!empty($name)) {
                     $skill = Skill::firstOrCreate(
-                        ['name' => ucwords($name)], 
-                        ['is_global' => false] 
+                        ['name' => ucwords($name)],
+                        ['is_global' => false]
                     );
-                    
+
                     if (!in_array($skill->id, $selectedSkillIds)) {
                         $selectedSkillIds[] = $skill->id;
                     }
@@ -175,7 +175,7 @@ class FreelancerController extends Controller
 
         $profile->skills()->sync($selectedSkillIds);
 
-        return redirect()->route('freelancer.home')->with('status', 'Skills updated successfully!');
+        return redirect()->route('freelancer.home')->with('status', __('freelancer.skills_updated_success'));
     }
 
     public function skillsEdit()
@@ -191,7 +191,7 @@ class FreelancerController extends Controller
 
         return view('freelancer.skills', compact('skills', 'mySkills'));
     }
-    
+
     public function contractsIndex(Request $request)
     {
         $user = Auth::user();
@@ -205,18 +205,18 @@ class FreelancerController extends Controller
 
         if ($request->has('q') && $request->q != '') {
             $search = $request->q;
-            $query->where(function($q) use ($search) {
-                $q->whereHas('job', function($j) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('job', function ($j) use ($search) {
                     $j->where('title', 'like', "%{$search}%");
                 })
-                ->orWhereHas('job.clientProfile.user', function($u) use ($search) {
-                    $u->where('name', 'like', "%{$search}%");
-                });
+                    ->orWhereHas('job.clientProfile.user', function ($u) use ($search) {
+                        $u->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
         $contracts = $query->latest()->paginate(10)->withQueryString();
-        
+
         $activeCount = $user->freelancerProfile->contracts()->where('status', 'active')->count();
         $allCount = $user->freelancerProfile->contracts()->count();
 
@@ -247,7 +247,7 @@ class FreelancerController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         $user->freelancerProfile()->update([
             'headline' => $request->headline,
             'rate_per_hour' => $request->rate_per_hour,
@@ -257,6 +257,6 @@ class FreelancerController extends Controller
             'portfolio_url' => $request->portfolio_url
         ]);
 
-        return redirect()->route('freelancer.profile.show')->with('status', 'Profile updated!');
+        return redirect()->route('freelancer.profile.show')->with('status', __('freelancer.profile_updated_success'));
     }
 }

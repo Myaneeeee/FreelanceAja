@@ -13,12 +13,6 @@
                 </a>
             </div>
 
-            @if (session('status'))
-                <div class="alert alert-success border-0 shadow-sm mb-4">
-                    <i class="bi bi-check-circle-fill me-2"></i> {{ session('status') }}
-                </div>
-            @endif
-
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-start">

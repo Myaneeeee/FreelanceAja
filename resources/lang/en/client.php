@@ -28,6 +28,11 @@ return [
     'attachment' => 'Attachment:',
     'view_pdf_proposal' => 'View PDF Proposal',
     'contract_started_success' => 'Contract started successfully! Work can begin.',
+    'proposal_accepted_success' => 'Proposal accepted! Please review and finalize the contract details.',
+    'proposal_rejected' => 'Proposal rejected.',
+    'proposals_rejected' => ':count proposals have been rejected.',
+    'profile_updated_success' => 'Profile updated successfully!',
+    'no_pending_proposals' => 'No pending proposals to reject.',
     'select_freelancer_and_job' => 'Select Freelancer & Job',
     'finalize_terms_step' => 'Step 2 of 2: Finalize Terms',
     'no_accepted_proposals_found' => 'No Accepted Proposals Found',
@@ -139,4 +144,5 @@ return [
     'manage_active_work_desc' => 'Manage your active work and view history.',
     'search_contract_placeholder' => 'Search contract...',
     'accept_proposal_to_start' => 'Accept a proposal to start a new contract.',
+    'bid' => 'Bid',
 ];
