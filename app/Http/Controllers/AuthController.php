@@ -67,7 +67,7 @@ class AuthController extends Controller
             ]);
         } else {
             $user->freelancerProfile()->create([
-                'headline'      => 'New Freelancer',
+                'headline'      => __('freelancer.new_freelancer'),
                 'rate_per_hour' => 0,
                 'contact_email' => $request->contact_email,
                 'contact_phone' => $request->contact_phone,

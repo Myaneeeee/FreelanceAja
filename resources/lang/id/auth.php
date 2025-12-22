@@ -19,4 +19,9 @@ return [
     'register_link' => 'Daftar',
     'placeholder_name' => 'contoh: John Doe',
     'placeholder_email' => 'nama@contoh.com',
+    'contact_email' => 'Email Kontak',
+    'contact_email_placeholder' => 'Untuk pertanyaan kerja',
+    'contact_phone' => 'Nomor Telepon',
+    'contact_phone_placeholder' => '+62...',
+    'visible_to_contracts' => 'Terlihat oleh kontrak.'
 ];

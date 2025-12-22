@@ -19,4 +19,9 @@ return [
     'register_link' => 'Register',
     'placeholder_name' => 'e.g. John Doe',
     'placeholder_email' => 'name@example.com',
+    'contact_email' => 'Contact Email',
+    'contact_email_placeholder' => 'For work inquiries',
+    'contact_phone' => 'Phone Number',
+    'contact_phone_placeholder' => '+62...',
+    'visible_to_contracts' => 'Visible to contracts.'
 ];
