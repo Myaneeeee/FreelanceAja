@@ -11,7 +11,8 @@
                     <h2 class="fw-bold mb-3">{{ $job->title }}</h2>
 
                     <div class="mb-4">
-                        <span class="badge bg-primary me-2">{{ ucwords(str_replace('_', ' ', $job->type)) }}</span>
+                        <span
+                            class="badge bg-primary me-2">{{ $job->type == 'hourly' ? __('freelancer.hourly_label') : __('freelancer.fixed_label') }}</span>
                         <span class="text-muted">{{ __('freelancer.posted') }}
                             {{ $job->created_at->format('M d, Y') }}</span>
                     </div>
@@ -37,7 +38,15 @@
                     <hr>
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="mb-0">{{ __('freelancer.current_status') }}
-                            <strong>{{ ucfirst($existingProposal->status) }}</strong>
+                            @php
+                                $statusLabel = match ($existingProposal->status) {
+                                    'sent' => __('freelancer.status_pending'),
+                                    'accepted' => __('freelancer.status_accepted'),
+                                    'rejected' => __('freelancer.status_rejected'),
+                                    default => ucfirst($existingProposal->status),
+                                };
+                            @endphp
+                            <strong>{{ $statusLabel }}</strong>
                         </p>
                         {{-- Optional: Show them what they uploaded --}}
                         @if ($existingProposal->attachment_path)

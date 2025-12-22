@@ -7,11 +7,11 @@
         <div class="col-lg-8">
             <div class="mb-3">
                 @if (session('active_role') == 'client')
-                    <a href="{{ route('client.contracts.index') }}" class="text-decoration-none text-muted">&larr; Back to
-                        Contracts</a>
+                    <a href="{{ route('client.contracts.index') }}" class="text-decoration-none text-muted">&larr;
+                        {{ __('client.back_to_contracts') }}</a>
                 @else
-                    <a href="{{ route('freelancer.contracts.index') }}" class="text-decoration-none text-muted">&larr; Back to
-                        Contracts</a>
+                    <a href="{{ route('freelancer.contracts.index') }}" class="text-decoration-none text-muted">&larr;
+                        {{ __('client.back_to_contracts') }}</a>
                 @endif
             </div>
 

@@ -34,7 +34,7 @@ return [
     'visit_portfolio' => 'Visit Portfolio',
     'professional_headline' => 'Professional Headline',
     'headline_placeholder' => 'e.g. Senior Laravel Developer',
-    'hourly_rate' => 'Hourly Rate (Rp)',
+    'hourly_rate' => 'Hourly Rate',
     'portfolio_url' => 'Portfolio URL',
     'portfolio_placeholder' => 'https://...',
     'bio_summary' => 'Bio / Summary',

@@ -32,8 +32,19 @@
                             {{ __('client.status_open') }}</option>
                         <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>
                             {{ __('client.status_in_progress') }}</option>
+                        <option value="waiting_for_review"
+                            {{ request('status') == 'waiting_for_review' ? 'selected' : '' }}>
+                            {{ __('client.status_waiting_for_review') }}</option>
+                        <option value="waiting_for_payment"
+                            {{ request('status') == 'waiting_for_payment' ? 'selected' : '' }}>
+                            {{ __('client.status_waiting_for_payment') }}</option>
+                        <option value="payment_verification"
+                            {{ request('status') == 'payment_verification' ? 'selected' : '' }}>
+                            {{ __('client.status_payment_verification') }}</option>
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>
                             {{ __('client.status_completed') }}</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>
+                            {{ __('client.status_cancelled') }}</option>
                     </select>
                 </div>
                 <div class="col-md-1">
@@ -72,7 +83,8 @@
                                             <span class="badge bg-light text-secondary border me-1">
                                                 {{ $job->type == 'fixed_price' ? __('freelancer.fixed_label') : __('freelancer.hourly_label') }}
                                             </span>
-                                            <span>{{ __('freelancer.posted') }} {{ $job->created_at->diffForHumans() }}</span>
+                                            <span>{{ __('freelancer.posted') }}
+                                                {{ $job->created_at->diffForHumans() }}</span>
                                         </div>
                                     </div>
                                 </td>
@@ -85,7 +97,7 @@
                                     <div class="d-flex align-items-center">
                                         @if ($job->new_proposals_count > 0)
                                             <span class="badge bg-danger rounded-pill me-2" title="New Proposals">
-                                                {{ $job->new_proposals_count }} New
+                                                {{ $job->new_proposals_count }} {{ __('client.badge_new') }}
                                             </span>
                                         @endif
                                         <span class="text-muted small">
@@ -98,6 +110,9 @@
                                         $statusClass = match ($job->status) {
                                             'open' => 'success',
                                             'in_progress' => 'primary',
+                                            'waiting_for_review' => 'warning',
+                                            'waiting_for_payment' => 'warning',
+                                            'payment_verification' => 'info',
                                             'completed' => 'secondary',
                                             'cancelled' => 'danger',
                                             default => 'secondary',
@@ -105,8 +120,12 @@
                                         $statusLabel = match ($job->status) {
                                             'in_progress' => __('client.status_in_progress'),
                                             'open' => __('client.status_open'),
+                                            'waiting_for_review' => __('client.status_waiting_for_review'),
+                                            'waiting_for_payment' => __('client.status_waiting_for_payment'),
+                                            'payment_verification' => __('client.status_payment_verification'),
                                             'completed' => __('client.status_completed'),
-                                            default => ucfirst($job->status),
+                                            'cancelled' => __('client.status_cancelled'),
+                                            default => ucfirst(str_replace('_', ' ', $job->status)),
                                         };
                                     @endphp
                                     <span

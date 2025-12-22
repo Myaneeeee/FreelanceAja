@@ -87,7 +87,7 @@
                                                 class="text-dark">{{ $contract->freelancerProfile->user->name }}</span>
                                         </p>
                                     </div>
-                                    <span class="badge bg-success rounded-pill px-3">{{ ucfirst($contract->status) }}</span>
+                                    <span class="badge bg-success rounded-pill px-3">{{ __('common.active') }}</span>
                                 </div>
                                 <div class="mt-2 d-flex justify-content-between align-items-center">
                                     <span class="fw-bold text-secondary small">Rp.

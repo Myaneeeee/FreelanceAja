@@ -81,16 +81,16 @@
                                 <td>
                                     @php
                                         $badgeClass = match ($contract->status) {
-                                            'active' => 'success',
-                                            'completed' => 'primary',
-                                            'cancelled' => 'danger',
+                                            'active' => 'primary',
+                                            'completed' => 'success',
                                             'disputed' => 'warning',
+                                            'cancelled' => 'danger',
                                             default => 'secondary',
                                         };
                                     @endphp
                                     <span
                                         class="badge bg-{{ $badgeClass }}-subtle text-{{ $badgeClass }} border border-{{ $badgeClass }}-subtle rounded-pill px-3">
-                                        {{ ucfirst($contract->status) }}
+                                        {{ __('client.status_' . $contract->status) }}
                                     </span>
                                 </td>
                                 <td class="pe-4 text-end">

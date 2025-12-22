@@ -123,7 +123,7 @@
 
                 document.getElementById('summaryFreelancer').innerText = option.dataset.freelancer;
                 document.getElementById('summaryHeadline').innerText = option.dataset.headline || 'Freelancer';
-                document.getElementById('summaryJob').innerText = "Job: " + option.dataset.job;
+                document.getElementById('summaryJob').innerText = "{{ __('client.job_label') }}: " + option.dataset.job;
                 document.getElementById('summaryAvatar').innerText = option.dataset.initial;
             }
 
